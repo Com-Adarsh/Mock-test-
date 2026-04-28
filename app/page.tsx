@@ -1,39 +1,128 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import * as pdfjs from 'pdfjs-dist';
-import { Upload, ChevronLeft, ChevronRight, CheckCircle, Clock } from 'lucide-react';
+import { Upload, Clock, CheckCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
-// Initialize PDF.js Worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-export default function CBTPortal() {
+export default function App() {
   const [questions, setQuestions] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isStarted, setIsStarted] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [isExamStarted, setIsExamStarted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(1800);
-  const [answers, setAnswers] = useState({});
+  const [timeLeft, setTimeLeft] = useState(3600);
+  const [userAnswers, setUserAnswers] = useState({});
 
-  // 1. PDF Text Extraction Logic
   const extractText = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-    let text = "";
+    let fullText = "";
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      text += content.items.map((item: any) => item.str).join(" ");
+      fullText += content.items.map((item: any) => item.str).join(" ");
     }
-    return text;
+    return fullText;
   };
 
-  const handleFileUpload = async (e: any) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
     setLoading(true);
-    const text = await extractText(e.target.files[0]);
-    const res = await fetch('/api/parse', {
-      method: 'POST',
-      body: JSON.stringify({ text }),
-    });
+    try {
+      const text = await extractText(e.target.files[0]);
+      const res = await fetch('/api/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      setQuestions(data);
+    } catch (err) {
+      alert("Error processing PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isExamStarted && timeLeft > 0) {
+      const timer = setInterval(() => setTimeLeft(t => t - 1), 1000);
+      return () => clearInterval(timer);
+    }
+  }, [isExamStarted, timeLeft]);
+
+  if (!isExamStarted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+        <div className="bg-white max-w-lg w-full rounded-3xl shadow-xl p-10 border-t-[10px] border-[#8B0000]">
+          <h1 className="text-3xl font-black text-slate-800 mb-2">CUSAT CBT Portal</h1>
+          <p className="text-slate-500 mb-8 font-medium">Automatic Exam Generation from PDF</p>
+          
+          <div className="relative group">
+            <input type="file" onChange={onFileChange} className="hidden" id="upload" accept=".pdf" />
+            <label htmlFor="upload" className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:bg-red-50 hover:border-[#8B0000] transition-all">
+              {loading ? <Loader2 className="animate-spin text-[#8B0000] w-10 h-10" /> : <Upload className="text-slate-300 group-hover:text-[#8B0000] w-10 h-10 mb-3" />}
+              <span className="font-bold text-slate-500">{loading ? "Processing with AI..." : "Upload Question Paper PDF"}</span>
+            </label>
+          </div>
+
+          {questions.length > 0 && (
+            <button onClick={() => setIsExamStarted(true)} className="w-full mt-8 bg-[#8B0000] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-700 transition">
+              Launch Test ({questions.length} Questions)
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-50">
+      <header className="bg-[#8B0000] text-white p-4 px-8 flex justify-between items-center shadow-lg">
+        <h2 className="font-bold tracking-tighter text-lg uppercase">CUSAT Student Union Mock Portal</h2>
+        <div className="flex items-center gap-3 bg-black/20 px-4 py-2 rounded-lg font-mono text-xl">
+          <Clock className="w-5 h-5" />
+          {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+        </div>
+      </header>
+
+      <div className="flex-grow grid grid-cols-12 p-6 gap-6">
+        <div className="col-span-12 lg:col-span-9">
+          <div className="bg-white rounded-2xl shadow-sm border p-10 h-full relative">
+            <span className="text-xs font-black text-[#8B0000] uppercase">Question {current + 1}</span>
+            <h3 className="text-2xl font-semibold text-slate-800 mt-4 mb-10 leading-snug">{questions[current].q}</h3>
+            
+            <div className="space-y-4">
+              {questions[current].options.map((opt, i) => (
+                <button key={i} onClick={() => setUserAnswers({...userAnswers, [current]: i})} className={`w-full text-left p-5 rounded-xl border-2 transition-all flex items-center ${userAnswers[current] === i ? 'border-[#8B0000] bg-red-50' : 'border-slate-100 hover:border-slate-300 bg-slate-50'}`}>
+                  <div className={`w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center text-xs font-bold ${userAnswers[current] === i ? 'bg-[#8B0000] border-[#8B0000] text-white' : 'border-slate-300 text-slate-400'}`}>{i + 1}</div>
+                  <span className={userAnswers[current] === i ? 'text-[#8B0000] font-bold' : 'text-slate-600 font-medium'}>{opt}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-20 flex justify-between pt-6 border-t">
+              <button disabled={current === 0} onClick={() => setCurrent(c => c - 1)} className="flex items-center gap-2 font-bold text-slate-400 hover:text-slate-800 disabled:opacity-0"><ChevronLeft /> Previous</button>
+              <button onClick={() => current < questions.length - 1 ? setCurrent(c => c + 1) : alert("Ready to Submit?")} className="bg-[#8B0000] text-white px-10 py-3 rounded-xl font-bold shadow-md hover:bg-red-700 transition">Save & Next</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-span-12 lg:col-span-3">
+          <div className="bg-white rounded-2xl shadow-sm border p-6">
+            <h4 className="text-xs font-black text-slate-400 uppercase mb-4">Navigator</h4>
+            <div className="grid grid-cols-4 gap-2">
+              {questions.map((_, i) => (
+                <button key={i} onClick={() => setCurrent(i)} className={`h-10 rounded font-bold text-sm transition-all ${current === i ? 'bg-[#8B0000] text-white scale-110 shadow-lg' : userAnswers[i] !== undefined ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}>{i + 1}</button>
+              ))}
+            </div>
+            <button className="w-full mt-8 bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition"><CheckCircle className="w-5 h-5 text-green-400" /> Final Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
     const data = await res.json();
     setQuestions(data);
     setLoading(false);
