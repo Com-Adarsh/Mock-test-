@@ -1,0 +1,11 @@
+/ (root)
+├── package.json
+├── tailwind.config.js
+├── postcss.config.js
+└── app/
+    ├── layout.tsx
+    ├── page.tsx
+    ├── globals.css
+    └── api/
+        └── parse/
+            └── route.ts
