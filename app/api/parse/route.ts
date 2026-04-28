@@ -9,22 +9,23 @@ export async function POST(req: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
-      Extract exam questions from the text below. 
-      - Identify the question text and 4 options.
-      - Find the answer key at the end to determine the "correct" index (0 for A, 1 for B, etc.).
-      - Return ONLY a valid JSON array of objects.
+      You are an expert exam formatter. Convert the following raw text from a PDF into a JSON array of questions.
+      - Each question must have 'q', an array of 4 'options', and a 'correct' index (0-3).
+      - Use the answer key usually found at the end of the text to determine the correct index.
+      - Return ONLY the JSON array. Do not include markdown formatting.
       
-      Format: [{"q": "...", "options": ["...", "...", "...", "..."], "correct": 0}]
-      
-      TEXT: ${text.substring(0, 10000)} // Limiting text for safety
+      TEXT: ${text.substring(0, 15000)}
     `;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const cleanJson = response.text().replace(/```json|```/g, "");
+    const textData = response.text();
     
+    // Clean potential markdown from AI response
+    const cleanJson = textData.replace(/```json|```/g, "").trim();
     return NextResponse.json(JSON.parse(cleanJson));
   } catch (error) {
-    return NextResponse.json({ error: "Failed to parse PDF" }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: "Parsing failed" }, { status: 500 });
   }
 }
