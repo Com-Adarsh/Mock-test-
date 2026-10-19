@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SFI CUSAT MOCK TEST</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a; --surface: #141414; --surface-2: #1c1c1c; --surface-hover: #1f1f1f;
+    --border: #2a2a2a; --text: #ffffff; --muted: #a0a0a0;
+    --primary: #d00020; --primary-hover: #a00018;
+    --highlight: #ffcc00; --highlight-dim: rgba(255,204,0,0.15);
+    --success: #10b981; --danger: #ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  body{background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+  button{cursor:pointer;font-family:inherit;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:14px;color:var(--text)}
+  a{color:var(--highlight);text-decoration:none}
+
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-icon{width:38px;height:38px;background:var(--primary);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 0 20px rgba(208,0,32,0.3)}
+  .topbar h1{font-size:17px;font-weight:700;letter-spacing:-0.01em}
+  .user-info{display:flex;align-items:center;gap:10px;font-size:13px}
+  .role-badge{background:var(--highlight-dim);color:var(--highlight);padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+  .btn-logout{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.3);padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600}
+  .btn-logout:hover{background:rgba(239,68,68,0.25)}
+
+  .container{max-width:1400px;margin:0 auto;padding:24px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+  .card h2,.card h3{margin-bottom:16px}
+  .card h2{color:var(--highlight);font-size:22px}
+  .card h3{color:var(--text);font-size:17px}
+
+  .landing{min-height:calc(100vh - 66px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at top,rgba(208,0,32,0.1),transparent 50%),var(--bg)}
+  .landing-hero{text-align:center;margin-bottom:48px;max-width:700px}
+  .landing-hero h2{font-size:52px;color:var(--text);margin-bottom:16px;font-weight:800;letter-spacing:-0.03em;line-height:1.1}
+  .landing-hero h2 span{color:var(--primary)}
+  .landing-hero p{font-size:17px;color:var(--muted);margin-bottom:8px}
+  .signin-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:760px;width:100%}
+  .signin-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 28px;transition:all .25s;cursor:pointer;text-align:center;position:relative;overflow:hidden}
+  .signin-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--primary);transform:scaleX(0);transition:transform .3s;transform-origin:left}
+  .signin-card:hover{transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 32px rgba(208,0,32,0.2)}
+  .signin-card:hover::before{transform:scaleX(1)}
+  .signin-card.moderator::before{background:var(--highlight)}
+  .signin-card.moderator:hover{border-color:var(--highlight);box-shadow:0 12px 32px rgba(255,204,0,0.15)}
+  .signin-card .icon{width:64px;height:64px;border-radius:16px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--surface-2)}
+  .signin-card.student .icon{color:var(--primary)}
+  .signin-card.moderator .icon{color:var(--highlight)}
+  .signin-card h3{font-size:20px;margin-bottom:8px;color:var(--text)}
+  .signin-card p{color:var(--muted);font-size:14px;margin-bottom:20px;min-height:40px}
+  .signin-card .btn{width:100%;padding:12px;border-radius:8px;font-weight:600;font-size:14px}
+  .signin-card.student .btn{background:var(--primary);color:#fff}
+  .signin-card.student .btn:hover{background:var(--primary-hover)}
+  .signin-card.moderator .btn{background:var(--highlight);color:#000}
+  .signin-card.moderator .btn:hover{background:#e6b800}
+
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;max-width:440px;width:100%}
+  .form-card h2{color:var(--highlight);margin-bottom:8px}
+  .form-card .subtitle{color:var(--muted);margin-bottom:24px;font-size:14px}
+  .form-group{margin-bottom:16px}
+  .form-group label{display:block;margin-bottom:6px;font-weight:500;font-size:13px;color:var(--muted)}
+  .form-input{width:100%;background:var(--bg);border:1px solid var(--border);padding:10px 12px;border-radius:6px;transition:border-color .2s}
+  .form-input:focus{outline:none;border-color:var(--highlight);box-shadow:0 0 0 2px var(--highlight-dim)}
+  .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+
+  .btn{padding:10px 20px;border-radius:6px;font-weight:600;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}
+  .btn-highlight{background:var(--highlight);color:#000}.btn-highlight:hover{background:#e6b800}
+  .btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--muted)}
+  .btn-danger{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}.btn-danger:hover{background:rgba(239,68,68,0.25)}
+  .btn-success{background:var(--success);color:#fff}
+  .btn-sm{padding:6px 12px;font-size:12px}
+  .btn-block{width:100%}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .message{padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:16px;text-align:center}
+  .message.error{background:rgba(239,68,68,0.15);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
+  .message.success{background:rgba(16,185,129,0.15);color:var(--success);border:1px solid rgba(16,185,129,0.3)}
+  .message.info{background:var(--highlight-dim);color:var(--highlight);border:1px solid rgba(255,204,0,0.3)}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;border-left:3px solid var(--primary)}
+  .stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:6px}
+  .stat-card .value{font-size:26px;font-weight:700}
+  .stat-card.success{border-left-color:var(--success)}
+
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{background:var(--bg);padding:12px;text-align:left;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  tr:hover td{background:var(--surface-hover)}
+  .badge{display:inline-block;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase}
+  .badge-mcq{background:rgba(59,130,246,0.2);color:#60a5fa}
+  .badge-msq{background:rgba(139,92,246,0.2);color:#a78bfa}
+  .badge-nat{background:rgba(16,185,129,0.2);color:#34d399}
+  .badge-published{background:rgba(16,185,129,0.2);color:#34d399}
+  .badge-draft{background:rgba(160,160,160,0.2);color:#a0a0a0}
+
+  .upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
+  .upload-zone:hover,.upload-zone.dragover{border-color:var(--highlight);background:var(--highlight-dim)}
+  .upload-zone p{color:var(--muted);margin-top:8px;font-size:14px}
+  .upload-zone strong{color:var(--highlight)}
+  .file-meta{display:flex;gap:16px;margin-top:14px;font-size:13px;color:var(--muted);background:var(--bg);padding:12px;border-radius:8px;border:1px solid var(--border);flex-wrap:wrap}
+  .file-meta strong{color:var(--highlight)}
+
+  .pdf-controls{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .pdf-stage{position:relative;background:#1a1a1a;border:1px solid var(--border);border-radius:8px;overflow:auto;max-height:70vh;display:flex;justify-content:center;padding:20px;cursor:crosshair}
+  .pdf-canvas{display:block;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+  .crop-box{position:absolute;border:2px solid var(--highlight);background:rgba(255,204,0,0.1);cursor:move;transition:background .2s}
+  .crop-box:hover{background:rgba(255,204,0,0.2)}
+  .crop-tag{position:absolute;top:-22px;left:-2px;background:var(--highlight);color:#000;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px 3px 0 0;white-space:nowrap;pointer-events:none}
+  .crop-tag.type-mcq{background:#3b82f6;color:#fff}
+  .crop-tag.type-msq{background:#8b5cf6;color:#fff}
+  .crop-tag.type-nat{background:#10b981;color:#fff}
+  .q-thumb{width:60px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border);background:#fff}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto}
+  .tab{padding:12px 20px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;font-size:14px}
+  .tab:hover{color:var(--text)}
+  .tab.active{color:var(--highlight);border-bottom-color:var(--highlight)}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:20px}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-width:500px;padding:28px;box-shadow:0 20px 40px rgba(0,0,0,0.5);max-height:90vh;overflow-y:auto}
+  .modal h3{margin-bottom:16px;color:var(--highlight)}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+  .summary-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+
+  .exam-wrap{display:grid;grid-template-columns:1fr 280px;gap:16px;height:calc(100vh - 66px);padding:16px}
+  .exam-main{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;overflow-y:auto}
+  .exam-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;overflow:hidden}
+  .exam-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+  .timer{background:var(--primary);color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;box-shadow:0 0 20px rgba(208,0,32,0.3)}
+  .timer.warn{background:#f59e0b;box-shadow:0 0 20px rgba(245,158,11,0.3)}
+  .timer.danger{background:var(--danger);animation:pulse 1s infinite;box-shadow:0 0 20px rgba(239,68,68,0.4)}
+  @keyframes pulse{50%{opacity:.7}}
+  .q-text{font-size:16px;line-height:1.7;margin-bottom:20px;white-space:pre-wrap}
+  .q-text img{max-width:100%;border-radius:6px;margin-top:10px;border:1px solid var(--border)}
+  .q-meta{display:flex;gap:12px;font-size:13px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap}
+  .options-list{display:flex;flex-direction:column;gap:10px}
+  .option{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
+  .option:hover{border-color:var(--highlight);background:var(--highlight-dim)}
+  .option.selected{border-color:var(--highlight);background:var(--highlight-dim)}
+  .option input{margin-top:3px;accent-color:var(--highlight)}
+  .nat-input{width:100%;padding:12px;border:2px solid var(--border);border-radius:8px;font-size:16px;background:var(--bg);color:var(--text)}
+  .nat-input:focus{outline:none;border-color:var(--highlight)}
+  .exam-actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap}
+  .exam-actions .left-actions,.exam-actions .right-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .palette-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:10px;letter-spacing:.05em}
+  .palette-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;font-size:11px}
+  .palette-legend .item{display:flex;align-items:center;gap:6px}
+  .palette-legend .swatch{width:16px;height:16px;border-radius:3px;border:1px solid var(--border)}
+  .swatch.not-visited{background:#2a2a2a}
+  .swatch.answered{background:var(--success)}
+  .swatch.marked{background:var(--highlight)}
+  .palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;overflow-y:auto;flex:1;padding:4px}
+  .palette-btn{aspect-ratio:1;border-radius:6px;border:1px solid var(--border);font-weight:600;font-size:13px;cursor:pointer;background:var(--bg);color:var(--text)}
+  .palette-btn:hover{transform:scale(1.05)}
+  .palette-btn.active{outline:2px solid var(--highlight);outline-offset:1px}
+  .palette-btn.not-visited{background:#2a2a2a;color:var(--muted)}
+  .palette-btn.answered{background:var(--success);color:#fff}
+  .palette-btn.marked{background:var(--highlight);color:#000}
+
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:2000;font-size:14px;animation:slideIn .3s;display:flex;align-items:center;gap:8px;max-width:400px}
+  .toast.success{border-left:4px solid var(--success)}
+  .toast.error{border-left:4px solid var(--danger)}
+  @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+  .empty-state .icon{font-size:48px;margin-bottom:12px;opacity:.5}
+  .hidden{display:none !important}
+
+  @media(max-width:768px){
+    .exam-wrap{grid-template-columns:1fr;height:auto}
+    .exam-sidebar{order:-1}
+    .palette-grid{grid-template-columns:repeat(8,1fr)}
+    .landing-hero h2{font-size:34px}
+    .container{padding:16px}
+    .topbar{padding:12px 16px}
+    .topbar h1{font-size:14px}
+    .topbar .brand-icon{width:32px;height:32px;font-size:15px}
+  }
+</style>
+</head>
+<body>
+<div id="app"><div style="padding:40px;text-align:center;color:var(--muted)"><span class="spinner" style="border-color:var(--border);border-top-color:var(--primary)"></span> Loading…</div></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ⚠️ REPLACE WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+const GAS_URL = 'PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE';
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtTime = sec => {
+  sec = Math.max(0, Math.floor(sec));
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return (h ? String(h).padStart(2, '0') + ':' : '') + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+};
+const fmtDate = ts => ts ? new Date(ts).toLocaleString() : '—';
+const fmtSize = b => b < 1024 * 1024 ? (b / 1024).toFixed(1) + ' KB' : (b / 1024 / 1024).toFixed(2) + ' MB';
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type === 'success' ? '✅ ' : type === 'error' ? '⚠️ ') + escapeHtml(msg);
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+function withSpinner(btn, label = 'Loading…') {
+  const orig = btn.innerHTML; btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> ${label}`;
+  return () => { btn.disabled = false; btn.innerHTML = orig; };
+}
+
+/* ---------- API Layer (FIXED) ---------- */
+const API = {
+  async call(action, body = {}) {
+    // ✅ FIX: Only use LocalDB if GAS_URL is missing or still the placeholder
+    if (!GAS_URL || GAS_URL.includes('PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE')) {
+      console.warn('Using LocalDB preview mode. Set GAS_URL for production.');
+      return LocalDB.handle(action, body);
+    }
+    
+    // ✅ FIX: Correct token selection based on action prefix
+    const token = action.startsWith('mod')
+      ? localStorage.getItem('sfi_mod_token')
+      : localStorage.getItem('sfi_token');
+    
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action, token, ...body }) });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Request failed');
+      return data;
+    } catch (err) {
+      throw new Error(err.message || 'Network error');
+    }
+  }
+};
+
+const LocalDB = {
+  _get(k, d) { try { return JSON.parse(localStorage.getItem('sfi_' + k)) ?? d; } catch { return d; } },
+  _set(k, v) { localStorage.setItem('sfi_' + k, JSON.stringify(v)); },
+  init() {
+    const users = this._get('users', []);
+    if (!users.find(u => u.role === 'moderator')) {
+      users.push({ id: 'mod_default', name: 'Administrator', email: 'sficusathelpdesk@gmail.com', password: 'sficusat2026', role: 'moderator', createdAt: Date.now() });
+      this._set('users', users);
+    }
+  },
+  async handle(action, b) {
+    this.init();
+    const users = this._get('users', []), tests = this._get('tests', []), attempts = this._get('attempts', []);
+    const token = b.token || localStorage.getItem('sfi_token') || localStorage.getItem('sfi_mod_token');
+    const compare = (q, resp) => {
+      if (q.type === 'NAT') { const a = parseFloat(String(q.answer).trim()), v = parseFloat(String(resp).trim()); return !isNaN(a) && !isNaN(v) && Math.abs(a - v) < 0.01; }
+      if (q.type === 'MSQ') { const a = (q.answer||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean).sort().join(','); const v = String(resp).split(',').map(x=>x.trim().toUpperCase()).filter(Boolean).sort().join(','); return a === v; }
+      return String(q.answer||'').trim().toUpperCase() === String(resp).trim().toUpperCase();
+    };
+    const score = (att) => {
+      const qs = tests.find(x => x.id === att.testId)?.questions || [];
+      let c=0, w=0, s=0, sc=0; const pos = tests.find(x => x.id === att.testId)?.posMarks || 4, neg = tests.find(x => x.id === att.testId)?.negMarks || 1;
+      qs.forEach(q => { const r = att.responses?.[q.id]; if (r===undefined||r===null||r==='') { s++; return; } if (compare(q,r)) { c++; sc+=pos; } else { w++; sc-=neg; } });
+      return { score: sc, correct: c, wrong: w, skipped: s };
+    };
+
+    if (action === 'register') {
+      if (users.find(u => String(u.rollNumber).toUpperCase() === String(b.rollNumber).toUpperCase())) return { success: false, message: 'Roll number already registered.' };
+      const u = { id: 'u_'+uid(), fullName: b.fullName, rollNumber: String(b.rollNumber).toUpperCase(), email: b.email, phone: b.phone, role: 'student', createdAt: Date.now() };
+      users.push(u); this._set('users', users);
+      const t = 'tk_'+uid(); this._set('sessions', [...this._get('sessions',[]), { token: t, userId: u.id, role: 'student' }]);
+      return { success: true, message: 'Registered successfully', token: t, student: { fullName: u.fullName, rollNumber: u.rollNumber, email: u.email } };
+    }
+    if (action === 'modLogin') {
+      const u = users.find(x => x.email === b.email && x.password === b.password && x.role === 'moderator');
+      if (!u) return { success: false, message: 'Invalid moderator credentials' };
+      const t = 'mod_'+uid(); localStorage.setItem('sfi_mod_token', t); localStorage.setItem('sfi_mod_session', JSON.stringify({ name: u.name, email: u.email, role: 'moderator' }));
+      return { success: true, token: t, user: { name: u.name, email: u.email, role: 'moderator' } };
+    }
+    if (action === 'listTests') return { success: true, tests: tests.filter(t => t.status === 'Published').map(t => ({ id: t.id, title: t.title, description: t.description, duration: t.duration, posMarks: t.posMarks, negMarks: t.negMarks, totalMarks: t.totalMarks, questionCount: (t.questions||[]).length })) };
+    if (action === 'getQuestions') { const t = tests.find(x => x.id === b.testId); return { success: true, questions: (t?.questions||[]).map(q => ({ id: q.id, page: q.page, type: q.type, marks: q.marks, negMarks: q.negMarks, thumbnail: q.thumbnail })) }; }
+    if (action === 'startAttempt') {
+      const t = tests.find(x => x.id === b.testId && x.status === 'Published'); if (!t) return { success: false, message: 'Test not found' };
+      const att = { id: 'a_'+uid(), testId: t.id, token, startedAt: Date.now(), expiresAt: Date.now() + t.duration * 60000, status: 'in-progress', responses: {}, review: {}, score: 0, correct: 0, wrong: 0, skipped: 0 };
+      attempts.push(att); this._set('attempts', attempts); return { success: true, attemptId: att.id, expiresAt: att.expiresAt };
+    }
+    if (action === 'saveResponse') { const att = attempts.find(a => a.id === b.attemptId); if (!att) return { success: false, message: 'Not found' }; att.responses = att.responses || {}; if (b.response === '' || b.response == null) delete att.responses[b.questionId]; else att.responses[b.questionId] = b.response; this._set('attempts', attempts); return { success: true }; }
+    if (action === 'submitAttempt') { const att = attempts.find(a => a.id === b.attemptId); if (!att) return { success: false, message: 'Not found' }; if (att.status === 'submitted') return { success: false, message: 'Already submitted' }; const s = score(att); Object.assign(att, { status: 'submitted', ...s, submittedAt: Date.now() }); this._set('attempts', attempts); return { success: true, ...s }; }
+    if (action === 'myResults') { const mine = attempts.filter(a => a.token === token && a.status === 'submitted'); return { success: true, results: mine.map(a => { const t = tests.find(x => x.id === a.testId); return { ...a, testTitle: t?.title || '—', totalMarks: t?.totalMarks || 0 }; }) }; }
+    if (action === 'modGetTests') return { success: true, tests: tests.map(t => ({ TestID: t.id, Title: t.title, Description: t.description, Duration: t.duration, PosMarks: t.posMarks, NegMarks: t.negMarks, TotalMarks: t.totalMarks, Status: t.status, questionCount: (t.questions||[]).length, attemptCount: attempts.filter(a => a.testId === t.id).length })) };
+    if (action === 'modSaveTest') { const t = b.test; const existing = tests.find(x => x.id === t.id); const totalMarks = (t.questions||[]).reduce((sum, q) => sum + Number(q.marks||0), 0); if (existing) Object.assign(existing, { title: t.title, description: t.description, duration: t.duration, posMarks: t.posMarks, negMarks: t.negMarks, totalMarks, status: t.status, questions: t.questions }); else tests.push({ id: t.id, title: t.title, description: t.description, duration: t.duration, posMarks: t.posMarks, negMarks: t.negMarks, totalMarks, status: t.status, questions: t.questions, createdAt: Date.now() }); this._set('tests', tests); return { success: true, message: 'Saved' }; }
+    if (action === 'modDeleteTest') { const i = tests.findIndex(t => t.id === b.testId); if (i >= 0) tests.splice(i, 1); this._set('tests', tests); return { success: true }; }
+    if (action === 'modPublishTest') { const t = tests.find(x => x.id === b.testId); if (t) { t.status = b.publish ? 'Published' : 'Draft'; this._set('tests', tests); } return { success: true }; }
+    if (action === 'modGetResults') { const submitted = attempts.filter(a => a.status === 'submitted'); return { success: true, results: submitted.map(a => { const u = users.find(x => x.id === (this._get('sessions',[]).find(s => s.token === a.token)?.userId)); const t = tests.find(x => x.id === a.testId); return { fullName: u?.fullName || '—', rollNumber: u?.rollNumber || '—', testTitle: t?.title || '—', score: a.score, correct: a.correct, wrong: a.wrong, skipped: a.skipped, totalMarks: t?.totalMarks || 0 }; }) }; }
+    if (action === 'modGetStudents') return { success: true, students: users.filter(u => u.role === 'student').map(u => ({ FullName: u.fullName, RollNumber: u.rollNumber, Email: u.email, Phone: u.phone, Timestamp: u.createdAt })) };
+    return { success: false, message: 'Unknown action' };
+  }
+};
+LocalDB.init();
+
+/* ---------- Auth & Router ---------- */
+const Auth = {
+  currentStudent() { const token = localStorage.getItem('sfi_token'), data = localStorage.getItem('sfi_student_data'); return (token && data) ? JSON.parse(data) : null; },
+  currentModerator() { const raw = localStorage.getItem('sfi_mod_session'); return raw ? JSON.parse(raw) : null; },
+  async registerStudent(payload) { const data = await API.call('register', payload); if (data.success) { localStorage.setItem('sfi_token', data.token); localStorage.setItem('sfi_student_data', JSON.stringify(data.student)); } return data; },
+  async loginModerator(email, password) {
+    const data = await API.call('modLogin', { email: email.trim(), password });
+    if (!data.success || !data.token) throw new Error(data.message || 'Login failed');
+    localStorage.setItem('sfi_mod_token', data.token);
+    localStorage.setItem('sfi_mod_session', JSON.stringify(data.user));
+    return data.user;
+  },
+  logoutStudent() { localStorage.removeItem('sfi_token'); localStorage.removeItem('sfi_student_data'); },
+  logoutModerator() { localStorage.removeItem('sfi_mod_token'); localStorage.removeItem('sfi_mod_session'); }
+};
+
+const Router = {
+  routes: {}, register(p, h) { this.routes[p] = h; }, go(h) { location.hash = h; },
+  start() { window.addEventListener('hashchange', () => this.resolve()); this.resolve(); },
+  resolve() {
+    const hash = location.hash || '#/'; const [path] = hash.slice(2).split('/'); const key = '/' + (path || '');
+    const h = this.routes[key] || this.routes['/']; try { h(); } catch (e) { console.error(e); }
+  }
+};
+
+Router.register('/', () => { if (Auth.currentStudent()) Router.go('#/student'); else if (Auth.currentModerator()) Router.go('#/moderator'); else viewLanding(); });
+Router.register('/student', viewStudentDash);
+Router.register('/moderator/login', viewModLogin);
+Router.register('/moderator', viewModDash);
+Router.start();
+
+/* ---------- Views ---------- */
+function viewLanding() {
+  $('#app').innerHTML = `
+    <div class="topbar"><div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div>${!GAS_URL || GAS_URL.includes('PASTE') ? '<span class="role-badge" style="background:rgba(255,204,0,0.15);color:var(--highlight)">PREVIEW MODE</span>' : ''}</div>
+    <div class="landing">
+      <div class="landing-hero"><h2>SFI CUSAT <span>MOCK TEST</span></h2><p>Practice for your entrance examination with timed, secure mock tests.</p><p style="font-size:14px;margin-top:8px">Choose your role to continue.</p></div>
+      <div class="signin-cards">
+        <div class="signin-card student" data-role="student"><div class="icon">🎓</div><h3>Student Portal</h3><p>Register or sign in to attend mock tests and view your results.</p><button class="btn">Continue as Student</button></div>
+        <div class="signin-card moderator" data-role="moderator"><div class="icon">🛡️</div><h3>Moderator Portal</h3><p>Authorised staff only. Create tests, manage questions, and review results.</p><button class="btn">Continue as Moderator</button></div>
+      </div>
+    </div>`;
+  $$('.signin-card').forEach(c => c.onclick = () => { if (c.dataset.role === 'student') { if (Auth.currentStudent()) Router.go('#/student'); else showRegistrationModal(); } else { Router.go('#/moderator/login'); } });
+}
+
+function showRegistrationModal() {
+  const overlay = document.createElement('div'); overlay.className = 'modal-overlay'; overlay.id = 'regModal';
+  overlay.innerHTML = `<div class="modal" style="max-width:440px"><h3 style="font-size:22px">Student Registration</h3><p style="color:var(--muted);margin-bottom:20px;font-size:14px">Register to access the mock tests. Each roll number can only be registered once.</p>
+    <form id="regForm"><div class="form-group"><label>Full Name *</label><input type="text" id="regName" class="form-input" required placeholder="e.g., John Doe"></div>
+    <div class="form-group"><label>Roll Number / Student ID *</label><input type="text" id="regRoll" class="form-input" required placeholder="e.g., CUSAT2024001"></div>
+    <div class="form-group"><label>Email Address *</label><input type="email" id="regEmail" class="form-input" required placeholder="e.g., student@example.com"></div>
+    <div class="form-group"><label>Phone Number *</label><input type="tel" id="regPhone" class="form-input" required placeholder="e.g., 9876543210"></div>
+    <div id="regMessage" class="message hidden"></div><button type="submit" id="regSubmitBtn" class="btn btn-highlight btn-block">Register & Continue to Test</button></form>
+    <div style="text-align:center;margin-top:16px"><a href="#/" style="color:var(--muted);font-size:13px">← Back to Home</a></div></div>`;
+  document.body.appendChild(overlay);
+  $('#regForm').onsubmit = async (e) => {
+    e.preventDefault(); const msgDiv = $('#regMessage'), btn = $('#regSubmitBtn'); msgDiv.classList.add('hidden'); const done = withSpinner(btn, 'Registering...');
+    try {
+      const result = await Auth.registerStudent({ fullName: $('#regName').value.trim(), rollNumber: $('#regRoll').value.trim(), email: $('#regEmail').value.trim(), phone: $('#regPhone').value.trim() });
+      if (result.success) { msgDiv.textContent = result.message; msgDiv.className = 'message success'; setTimeout(() => { overlay.remove(); Router.go('#/student'); }, 1000); }
+      else { msgDiv.textContent = result.message || 'Registration failed.'; msgDiv.className = 'message error'; done(); }
+    } catch (err) { msgDiv.textContent = err.message; msgDiv.className = 'message error'; done(); }
+  };
+}
+
+function viewModLogin() {
+  $('#app').innerHTML = `<div class="topbar"><div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div><button class="btn-logout" data-back>← Back</button></div>
+    <div class="landing"><div class="form-card"><h2>Moderator Sign In</h2><p class="subtitle">Restricted area. Use your assigned credentials.</p><div id="err"></div>
+    <form id="modLoginForm"><div class="form-group"><label>Email</label><input type="email" name="email" class="form-input" required value="sficusathelpdesk@gmail.com"/></div>
+    <div class="form-group"><label>Password</label><input type="password" name="password" class="form-input" required value="sficusat2026"/></div>
+    <button class="btn btn-highlight btn-block" type="submit" id="modLoginBtn">Sign In</button></form>
+    <div class="message info" style="margin-top:16px"><strong>Default credentials:</strong> sficusathelpdesk@gmail.com / sficusat2026<br><small style="opacity:0.8">⚠️ Change these in the Apps Script before public use.</small></div></div></div>`;
+  $('[data-back]').onclick = () => Router.go('#/');
+  $('#modLoginForm').onsubmit = async (e) => {
+    e.preventDefault(); const btn = $('#modLoginBtn'), done = withSpinner(btn, 'Signing in…'), fd = new FormData(e.target);
+    try { await Auth.loginModerator(fd.get('email'), fd.get('password')); toast('Welcome, Moderator', 'success'); Router.go('#/moderator'); }
+    catch (err) { $('#err').innerHTML = `<div class="message error">${escapeHtml(err.message)}</div>`; } finally { done(); }
+  };
+}
+
+async function viewStudentDash() {
+  const user = Auth.currentStudent(); if (!user) { showRegistrationModal(); return; }
+  $('#app').innerHTML = `<div class="topbar"><div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div><div class="user-info"><span>${escapeHtml(user.fullName)}</span><span class="role-badge">Student</span><button class="btn-logout" id="logout">Sign Out</button></div></div>
+    <div class="container"><div style="margin-bottom:24px"><h2 style="color:var(--highlight);font-size:26px;margin-bottom:4px">Welcome, ${escapeHtml(user.fullName.split(' ')[0])}</h2><p style="color:var(--muted)">Roll No: ${escapeHtml(user.rollNumber)} · ${escapeHtml(user.email)}</p></div>
+    <div id="dashContent" style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner" style="border-color:var(--border);border-top-color:var(--primary)"></span> Loading tests…</div></div>`;
+  $('#logout').onclick = () => { Auth.logoutStudent(); Router.go('#/'); };
+  try {
+    const [testsRes, resultsRes] = await Promise.all([API.call('listTests'), API.call('myResults')]);
+    renderStudentDash(user, testsRes.tests || [], resultsRes.results || []);
+  } catch (err) { $('#dashContent').innerHTML = `<div class="message error">${escapeHtml(err.message)}</div>`; }
+}
+
+function renderStudentDash(user, tests, results) {
+  $('#dashContent').innerHTML = `<div class="stats-grid"><div class="stat-card"><div class="label">Available Tests</div><div class="value">${tests.length}</div></div><div class="stat-card success"><div class="label">Completed</div><div class="value">${results.length}</div></div></div>
+    <div class="card"><h3>Available Tests</h3>${tests.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px">${tests.map(t => `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:8px"><h4 style="font-size:16px">${escapeHtml(t.title)}</h4><span class="badge badge-published">Live</span></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;min-height:36px">${escapeHtml(t.description || '')}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:14px"><span>⏱ ${t.duration} min</span><span>📝 ${t.questionCount} Q</span><span>+${t.posMarks}/−${t.negMarks}</span></div>
+      <button class="btn btn-primary btn-block" data-start="${t.id}">Start Test</button></div>`).join('')}</div>` : `<div class="empty-state"><div class="icon">📭</div><p>No tests are currently available.</p></div>`}</div>
+    ${results.length ? `<div class="card"><h3>My Results</h3><div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Test</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th></tr></thead><tbody>${results.map(a => `<tr><td>${escapeHtml(a.testTitle)}</td><td><strong style="color:var(--highlight)">${a.score}</strong></td><td style="color:var(--success)">${a.correct}</td><td style="color:var(--danger)">${a.wrong}</td><td>${a.skipped}</td></tr>`).join('')}</tbody></table></div></div>` : ''}`;
+  $$('[data-start]').forEach(b => b.onclick = () => startTest(b.dataset.start));
+}
+
+/* ---------- Exam Engine ---------- */
+let examState = null, examTimer = null;
+async function startTest(testId) {
+  try {
+    const [res, qRes, testsRes] = await Promise.all([API.call('startAttempt', { testId }), API.call('getQuestions', { testId }), API.call('listTests')]);
+    const test = testsRes.tests.find(t => t.id === testId); if (!test) throw new Error('Test not found');
+    examState = { attemptId: res.attemptId, expiresAt: res.expiresAt, test, current: 0, questions: qRes.questions || [], responses: {}, review: {} };
+    renderExam(); startExamTimer();
+  } catch (err) { toast(err.message, 'error'); }
+}
+function startExamTimer() {
+  clearInterval(examTimer);
+  examTimer = setInterval(async () => {
+    if (!examState) return;
+    const remaining = Math.floor((examState.expiresAt - Date.now()) / 1000);
+    const timerEl = $('#examTimer');
+    if (timerEl) { timerEl.textContent = fmtTime(remaining); timerEl.classList.toggle('warn', remaining < 300 && remaining >= 60); timerEl.classList.toggle('danger', remaining < 60); }
+    if (remaining <= 0) { clearInterval(examTimer); await submitExam(true); }
+  }, 1000);
+}
+function renderExam() {
+  const { test, questions, current, responses, review } = examState; const q = questions[current];
+  const getStatus = i => { const qq = questions[i], ans = responses[qq.id], marked = review[qq.id], has = ans !== undefined && ans !== '' && ans !== null; return marked ? 'marked' : (has ? 'answered' : 'not-visited'); };
+  $('#app').innerHTML = `<div class="topbar"><div class="brand"><div class="brand-icon">S</div><h1>${escapeHtml(test.title)}</h1></div><div class="user-info"><span class="role-badge">Exam in progress</span></div></div>
+    <div class="exam-wrap"><div class="exam-main"><div class="exam-header"><h2 style="color:var(--highlight);font-size:20px">Question ${current + 1} of ${questions.length}</h2><div class="timer" id="examTimer">${fmtTime(Math.floor((examState.expiresAt - Date.now()) / 1000))}</div></div>
+    ${q ? `<div class="q-meta"><span class="badge badge-${q.type.toLowerCase()}">${q.type}</span><span>+${q.marks} / −${q.negMarks}</span></div><div class="q-text">${q.thumbnail ? `<img src="${q.thumbnail}" alt="Question"/>` : ''}<p style="margin-top:10px;color:var(--muted)">[Full question text would be rendered here from PDF or manual entry]</p></div>
+      <div class="exam-actions"><div class="left-actions"><button class="btn btn-secondary" id="prevBtn" ${current === 0 ? 'disabled' : ''}>← Previous</button><button class="btn btn-secondary" id="clearBtn">Clear Response</button></div>
+      <div class="right-actions"><button class="btn btn-highlight" id="markBtn">${review[q.id] ? 'Unmark' : 'Mark for Review'}</button><button class="btn btn-primary" id="saveNextBtn">Save & Next</button>${current === questions.length - 1 ? `<button class="btn btn-success" id="submitBtn">Submit Test</button>` : ''}</div></div>` : `<div class="empty-state"><p>No questions in this test.</p></div>`}</div>
+    <div class="exam-sidebar"><div class="palette-title">Question Palette</div><div class="palette-legend"><div class="item"><div class="swatch not-visited"></div>Not visited</div><div class="item"><div class="swatch answered"></div>Answered</div><div class="item"><div class="swatch marked"></div>Marked</div></div>
+    <div class="palette-grid">${questions.map((qq, i) => `<button class="palette-btn ${getStatus(i)} ${i === current ? 'active' : ''}" data-q="${i}">${i + 1}</button>`).join('')}</div>
+    <button class="btn btn-success btn-block" id="sideSubmit" style="margin-top:12px">Submit Test</button></div></div>`;
+  $('#prevBtn')?.addEventListener('click', () => { examState.current--; renderExam(); });
+  $('#saveNextBtn')?.addEventListener('click', async () => { await saveCurrentResponse(); if (current < questions.length - 1) { examState.current++; renderExam(); } });
+  $('#clearBtn')?.addEventListener('click', async () => { delete examState.responses[q.id]; await API.call('saveResponse', { attemptId: examState.attemptId, questionId: q.id, response: '' }); renderExam(); });
+  $('#markBtn')?.addEventListener('click', () => { examState.review[q.id] = !examState.review[q.id]; if (!examState.review[q.id]) delete examState.review[q.id]; renderExam(); });
+  $('#submitBtn')?.addEventListener('click', confirmSubmit); $('#sideSubmit')?.addEventListener('click', confirmSubmit);
+  $$('.palette-btn').forEach(b => b.onclick = () => { examState.current = +b.dataset.q; renderExam(); });
+}
+async function saveCurrentResponse() {}
+function confirmSubmit() {
+  const { questions, responses, review } = examState; let answered = 0, unanswered = 0, marked = 0;
+  questions.forEach(q => { const r = responses[q.id], m = review[q.id], has = r !== undefined && r !== '' && r !== null; if (m) marked++; if (has) answered++; else unanswered++; });
+  const overlay = document.createElement('div'); overlay.className = 'modal-overlay';
+  overlay.innerHTML = `<div class="modal"><h3>Submit Test?</h3><p style="color:var(--muted);margin-bottom:16px">Please review your answers before submitting. This action cannot be undone.</p>
+    <div style="margin:16px 0"><div class="summary-item"><span>Answered</span><strong style="color:var(--success)">${answered}</strong></div><div class="summary-item"><span>Not Answered</span><strong style="color:var(--danger)">${unanswered}</strong></div><div class="summary-item"><span>Marked for Review</span><strong style="color:var(--highlight)">${marked}</strong></div></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="cancelSubmit">Cancel</button><button class="btn btn-success" id="confirmSubmit">Submit</button></div></div>`;
+  document.body.appendChild(overlay);
+  $('#cancelSubmit').onclick = () => overlay.remove();
+  $('#confirmSubmit').onclick = async () => { overlay.remove(); await submitExam(false); };
+}
+async function submitExam(auto) {
+  clearInterval(examTimer);
+  try { await API.call('submitAttempt', { attemptId: examState.attemptId }); toast(auto ? 'Time up — test submitted' : 'Test submitted successfully', 'success'); }
+  catch (err) { toast('Submit failed: ' + err.message, 'error'); }
+  examState = null; Router.go('#/student');
+}
+
+/* ---------- Moderator Dashboard ---------- */
+let modTab = 'tests', currentPdf = null, currentPageNum = 1, scale = 1.5, isDragging = false, dragStart = { x: 0, y: 0 }, tempBox = null, editingTest = null;
+
+async function viewModDash() {
+  const user = Auth.currentModerator(); if (!user) { Router.go('#/moderator/login'); return; }
+  $('#app').innerHTML = `<div class="topbar"><div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST — Moderator</h1></div><div class="user-info"><span>${escapeHtml(user.name)}</span><span class="role-badge">Moderator</span><button class="btn-logout" id="logout">Sign Out</button></div></div>
+    <div class="container"><div class="tabs"><div class="tab ${modTab === 'tests' ? 'active' : ''}" data-tab="tests">Tests</div><div class="tab ${modTab === 'create' ? 'active' : ''}" data-tab="create">Test Maker</div><div class="tab ${modTab === 'results' ? 'active' : ''}" data-tab="results">Results</div><div class="tab ${modTab === 'students' ? 'active' : ''}" data-tab="students">Students</div></div>
+    <div id="tabContent"><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner" style="border-color:var(--border);border-top-color:var(--primary)"></span> Loading…</div></div></div>`;
+  $('#logout').onclick = () => { Auth.logoutModerator(); Router.go('#/'); };
+  $$('.tab').forEach(t => t.onclick = () => { modTab = t.dataset.tab; viewModDash(); });
+  try {
+    if (modTab === 'tests') { const data = await API.call('modGetTests'); renderModTests(data.tests || []); }
+    else if (modTab === 'create') renderModCreate();
+    else if (modTab === 'results') { const data = await API.call('modGetResults'); renderModResults(data.results || []); }
+    else if (modTab === 'students') { const data = await API.call('modGetStudents'); renderModStudents(data.students || []); }
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function renderModTests(tests) {
+  const c = $('#tabContent');
+  if (!tests.length) { c.innerHTML = `<div class="card"><div class="empty-state"><div class="icon">📋</div><p>No tests yet. Click "Test Maker" to create your first one.</p></div></div>`; return; }
+  c.innerHTML = `<div class="card"><h3>All Tests (${tests.length})</h3><div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Title</th><th>Duration</th><th>Questions</th><th>Status</th><th>Attempts</th><th>Actions</th></tr></thead><tbody>${tests.map(t => `<tr>
+    <td><strong>${escapeHtml(t.Title)}</strong><br><small style="color:var(--muted)">${escapeHtml((t.Description || '').slice(0, 60))}</small></td><td>${t.Duration} min</td><td>${t.questionCount || 0}</td>
+    <td><span class="badge badge-${(t.Status || 'Draft').toLowerCase()}">${t.Status || 'Draft'}</span></td><td>${t.attemptCount || 0}</td>
+    <td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-secondary btn-sm" data-toggle="${t.TestID}" data-status="${t.Status}">${t.Status === 'Published' ? 'Unpublish' : 'Publish'}</button><button class="btn btn-danger btn-sm" data-del="${t.TestID}">Delete</button></div></td></tr>`).join('')}</tbody></table></div></div>`;
+  $$('[data-toggle]').forEach(b => b.onclick = async () => { const publish = b.dataset.status !== 'Published'; await API.call('modPublishTest', { testId: b.dataset.toggle, publish }); toast('Test ' + (publish ? 'published' : 'unpublished'), 'success'); viewModDash(); });
+  $$('[data-del]').forEach(b => b.onclick = async () => { if (!confirm('Delete this test? This cannot be undone.')) return; await API.call('modDeleteTest', { testId: b.dataset.del }); toast('Test deleted', 'success'); viewModDash(); });
+}
+
+function renderModCreate() {
+  const c = $('#tabContent');
+  if (!editingTest) editingTest = { id: 't_' + uid(), title: '', description: '', duration: 60, posMarks: 4, negMarks: 1, status: 'Draft', questions: [] };
+  const t = editingTest;
+  c.innerHTML = `<div class="card"><h3>Test Configuration</h3><div class="form-row" style="margin-top:16px">
+    <div class="form-group" style="grid-column:span 2"><label>Test Title</label><input type="text" id="testTitle" class="form-input" placeholder="e.g., SFI CUSAT Physics Mock 1" value="${escapeHtml(t.title)}"></div>
+    <div class="form-group"><label>Duration (mins)</label><input type="number" id="testDuration" class="form-input" value="${t.duration}" min="1"></div>
+    <div class="form-group"><label>Default +Marks</label><input type="number" id="testPosMarks" class="form-input" value="${t.posMarks}" step="0.25"></div>
+    <div class="form-group"><label>Default -Marks</label><input type="number" id="testNegMarks" class="form-input" value="${t.negMarks}" step="0.25"></div></div>
+    <div class="form-group"><label>Description</label><textarea id="testDesc" class="form-input" rows="2">${escapeHtml(t.description || '')}</textarea></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary" onclick="saveTest('Draft')">Save as Draft</button><button class="btn btn-highlight" onclick="saveTest('Published')">Publish Test</button><div style="flex:1"></div><button class="btn btn-secondary" onclick="exportTestData()">⬇ Export JSON</button><label class="btn btn-secondary" style="cursor:pointer">⬆ Import JSON<input type="file" id="importFile" accept=".json" style="display:none" onchange="importTestData(this)"></label></div></div>
+    <div class="card"><h3>1. Upload PDF</h3><div class="upload-zone" id="dropZone" style="margin-top:16px"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg><p><strong>Click to upload</strong> or drag and drop PDF here</p><input type="file" id="pdfInput" accept="application/pdf" style="display:none"></div><div id="fileMeta" class="file-meta hidden"><span>📄 <strong id="fileName">file.pdf</strong></span><span>📑 <strong id="pageCount">0</strong> pages</span><span>💾 <strong id="fileSize">0 MB</strong></span></div></div>
+    <div class="card hidden" id="pdfWorkspace"><h3>2. Crop Questions & Set Answers</h3><div class="pdf-controls" style="margin-top:16px"><button class="btn btn-secondary btn-sm" onclick="changePage(-1)">← Prev</button><span style="color:var(--muted);font-size:14px;min-width:100px;text-align:center">Page <strong id="currentPage" style="color:var(--text)">1</strong> / <span id="totalPages">1</span></span><button class="btn btn-secondary btn-sm" onclick="changePage(1)">Next →</button><div style="width:1px;height:24px;background:var(--border);margin:0 8px"></div><select id="cropType" class="form-input" style="width:auto"><option value="MCQ">MCQ</option><option value="MSQ">MSQ</option><option value="NAT">NAT</option></select><input type="number" id="cropMarks" class="form-input" style="width:80px" placeholder="Marks" value="4"><input type="number" id="cropNeg" class="form-input" style="width:80px" placeholder="Neg" value="1"><span style="color:var(--muted);font-size:12px;margin-left:auto">Drag on the PDF to crop a question.</span></div><div class="pdf-stage" id="stageContainer"><canvas id="pdfCanvas" class="pdf-canvas"></canvas></div></div>
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3>3. Question Bank (<span id="qCount">${t.questions.length}</span>)</h3><button class="btn btn-secondary btn-sm" onclick="addManualQuestion()">+ Add Manual Question</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Preview</th><th>Type</th><th>Page</th><th>Marks (+/-)</th><th>Answer Key</th><th>Actions</th></tr></thead><tbody id="questionTableBody">${t.questions.length === 0 ? '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No questions yet. Drag a box on the PDF above.</td></tr>' : t.questions.map((q, i) => renderQuestionRow(q, i)).join('')}</tbody></table></div></div>`;
+  setupDragAndDrop(); setupCropping();
+}
+
+function renderQuestionRow(q, i) {
+  return `<tr><td>${i + 1}</td><td>${q.thumbnail ? `<img src="${q.thumbnail}" class="q-thumb" alt="Q">` : '<span style="color:var(--muted)">—</span>'}</td><td><span class="badge badge-${q.type.toLowerCase()}">${q.type}</span></td><td>${q.page}</td><td>+${q.marks} / -${q.negMarks}</td><td><input type="text" class="form-input" style="width:100px;padding:6px" value="${escapeHtml(q.answer)}" placeholder="Key" onchange="updateQuestion('${q.id}','answer',this.value)"></td><td><div style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm" onclick="jumpToPage(${q.page})" title="Jump to Page">📄</button><button class="btn btn-secondary btn-sm" onclick="openEditModal('${q.id}')" title="Edit">✏️</button><button class="btn btn-secondary btn-sm" onclick="duplicateQuestion('${q.id}')" title="Duplicate">📋</button><button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')" title="Delete">🗑️</button></div></td></tr>`;
+}
+
+function setupDragAndDrop() {
+  const dropZone = $('#dropZone'), fileInput = $('#pdfInput'); if (!dropZone) return;
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+}
+
+async function handleFile(file) {
+  if (file.type !== 'application/pdf') { toast('Please upload a valid PDF file.', 'error'); return; }
+  $('#fileName').innerText = file.name; $('#fileSize').innerText = fmtSize(file.size); $('#fileMeta').classList.remove('hidden'); $('#pdfWorkspace').classList.remove('hidden');
+  const arrayBuffer = await file.arrayBuffer(); currentPdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  $('#pageCount').innerText = currentPdf.numPages; $('#totalPages').innerText = currentPdf.numPages; currentPageNum = 1; renderPage(); toast('PDF loaded successfully', 'success');
+}
+
+async function renderPage() {
+  if (!currentPdf) return;
+  const page = await currentPdf.getPage(currentPageNum), viewport = page.getViewport({ scale }), canvas = $('#pdfCanvas');
+  canvas.height = viewport.height; canvas.width = viewport.width;
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+  $('#currentPage').innerText = currentPageNum; renderCropBoxes();
+}
+
+function changePage(delta) { if (!currentPdf) return; const newPage = currentPageNum + delta; if (newPage >= 1 && newPage <= currentPdf.numPages) { currentPageNum = newPage; renderPage(); } }
+
+function setupCropping() {
+  const container = $('#stageContainer'); if (!container) return;
+  container.addEventListener('mousedown', e => {
+    if (e.target.id !== 'pdfCanvas') return; isDragging = true;
+    const canvasRect = $('#pdfCanvas').getBoundingClientRect(); dragStart.x = e.clientX - canvasRect.left; dragStart.y = e.clientY - canvasRect.top;
+    tempBox = document.createElement('div'); tempBox.className = 'crop-box'; tempBox.style.left = dragStart.x + 'px'; tempBox.style.top = dragStart.y + 'px'; tempBox.style.width = '0px'; tempBox.style.height = '0px';
+    container.appendChild(tempBox);
+  });
+  container.addEventListener('mousemove', e => {
+    if (!isDragging || !tempBox) return;
+    const canvasRect = $('#pdfCanvas').getBoundingClientRect(), currentX = e.clientX - canvasRect.left, currentY = e.clientY - canvasRect.top;
+    const width = Math.abs(currentX - dragStart.x), height = Math.abs(currentY - dragStart.y), left = Math.min(currentX, dragStart.x), top = Math.min(currentY, dragStart.y);
+    tempBox.style.left = left + 'px'; tempBox.style.top = top + 'px'; tempBox.style.width = width + 'px'; tempBox.style.height = height + 'px';
+  });
+  container.addEventListener('mouseup', () => {
+    if (!isDragging || !tempBox) return; isDragging = false;
+    const width = parseInt(tempBox.style.width), height = parseInt(tempBox.style.height);
+    if (width < 30 || height < 30) { tempBox.remove(); tempBox = null; return; }
+    const canvas = $('#pdfCanvas'), thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = 120; thumbCanvas.height = (height / width) * 120;
+    thumbCanvas.getContext('2d').drawImage(canvas, parseInt(tempBox.style.left), parseInt(tempBox.style.top), width, height, 0, 0, 120, thumbCanvas.height);
+    const thumbnail = thumbCanvas.toDataURL('image/jpeg', 0.7);
+    const newQ = { id: 'q_' + Date.now(), page: currentPageNum, x: parseInt(tempBox.style.left), y: parseInt(tempBox.style.top), w: width, h: height, type: $('#cropType').value, marks: parseFloat($('#cropMarks').value) || 4, negMarks: parseFloat($('#cropNeg').value) || 1, answer: '', thumbnail };
+    editingTest.questions.push(newQ); tempBox.remove(); tempBox = null; renderCropBoxes(); renderQuestionTable(); toast('Question cropped. Set the answer key below.', 'success');
+  });
+}
+
+function renderCropBoxes() {
+  const container = $('#stageContainer'); if (!container) return;
+  container.querySelectorAll('.crop-box').forEach(el => el.remove());
+  editingTest.questions.filter(q => q.page === currentPageNum).forEach((q, idx) => {
+    const box = document.createElement('div'); box.className = 'crop-box'; box.style.left = q.x + 'px'; box.style.top = q.y + 'px'; box.style.width = q.w + 'px'; box.style.height = q.h + 'px';
+    const tag = document.createElement('div'); tag.className = `crop-tag type-${q.type.toLowerCase()}`; tag.innerText = `Q${idx + 1} | ${q.type}`; box.appendChild(tag); container.appendChild(box);
+  });
+}
+
+function renderQuestionTable() {
+  const tbody = $('#questionTableBody'); if (!tbody) return; $('#qCount').innerText = editingTest.questions.length;
+  if (editingTest.questions.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No questions yet. Drag a box on the PDF above.</td></tr>'; return; }
+  tbody.innerHTML = editingTest.questions.map((q, i) => renderQuestionRow(q, i)).join('');
+}
+
+function updateQuestion(id, field, value) { const q = editingTest.questions.find(x => x.id === id); if (q) q[field] = value; }
+function jumpToPage(page) { currentPageNum = page; renderPage(); toast(`Jumped to page ${page}`, 'success'); }
+function duplicateQuestion(id) { const q = editingTest.questions.find(x => x.id === id); if (!q) return; editingTest.questions.push({ ...q, id: 'q_' + Date.now(), x: q.x + 20, y: q.y + 20 }); renderCropBoxes(); renderQuestionTable(); toast('Question duplicated', 'success'); }
+function deleteQuestion(id) { if (!confirm('Delete this question?')) return; editingTest.questions = editingTest.questions.filter(x => x.id !== id); renderCropBoxes(); renderQuestionTable(); toast('Question deleted', 'success'); }
+function addManualQuestion() { editingTest.questions.push({ id: 'q_' + Date.now(), page: currentPageNum || 1, x: 50, y: 50, w: 200, h: 100, type: 'MCQ', marks: parseFloat($('#testPosMarks').value) || 4, negMarks: parseFloat($('#testNegMarks').value) || 1, answer: '', thumbnail: '' }); renderCropBoxes(); renderQuestionTable(); }
+function openEditModal(id) {
+  const q = editingTest.questions.find(x => x.id === id); if (!q) return;
+  const overlay = document.createElement('div'); overlay.className = 'modal-overlay';
+  overlay.innerHTML = `<div class="modal"><h3>Edit Question</h3><div class="form-group"><label>Type</label><select id="editType" class="form-input"><option value="MCQ" ${q.type === 'MCQ' ? 'selected' : ''}>MCQ</option><option value="MSQ" ${q.type === 'MSQ' ? 'selected' : ''}>MSQ</option><option value="NAT" ${q.type === 'NAT' ? 'selected' : ''}>NAT</option></select></div>
+    <div class="form-row"><div class="form-group"><label>Marks</label><input type="number" id="editMarks" class="form-input" step="0.25" value="${q.marks}"></div><div class="form-group"><label>Negative</label><input type="number" id="editNeg" class="form-input" step="0.25" value="${q.negMarks}"></div></div>
+    <div class="form-group"><label>Correct Answer (B / A,C / 4.5)</label><input type="text" id="editAnswer" class="form-input" value="${escapeHtml(q.answer)}"></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="editCancel">Cancel</button><button class="btn btn-highlight" id="editSave">Save</button></div></div>`;
+  document.body.appendChild(overlay);
+  $('#editCancel').onclick = () => overlay.remove();
+  $('#editSave').onclick = () => { q.type = $('#editType').value; q.marks = parseFloat($('#editMarks').value) || 0; q.negMarks = parseFloat($('#editNeg').value) || 0; q.answer = $('#editAnswer').value.trim().toUpperCase(); overlay.remove(); renderCropBoxes(); renderQuestionTable(); toast('Question updated', 'success'); };
+}
+
+async function saveTest(status) {
+  const title = $('#testTitle').value.trim(); if (!title) { toast('Please enter a Test Title', 'error'); return; }
+  if (editingTest.questions.length === 0) { toast('Add at least one question', 'error'); return; }
+  editingTest.title = title; editingTest.description = $('#testDesc').value; editingTest.duration = parseInt($('#testDuration').value) || 60;
+  editingTest.posMarks = parseFloat($('#testPosMarks').value) || 4; editingTest.negMarks = parseFloat($('#testNegMarks').value) || 1; editingTest.status = status;
+  try {
+    await API.call('modSaveTest', { test: editingTest }); toast(`Test ${status === 'Published' ? 'Published' : 'Saved as Draft'} successfully!`, 'success');
+    if (status === 'Published') { editingTest = null; modTab = 'tests'; viewModDash(); }
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function exportTestData() {
+  if (editingTest.questions.length === 0) { toast('No questions to export', 'error'); return; }
+  const dataStr = JSON.stringify({ title: $('#testTitle').value, description: $('#testDesc').value, duration: $('#testDuration').value, posMarks: $('#testPosMarks').value, negMarks: $('#testNegMarks').value, questions: editingTest.questions }, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' }), url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = `sfi_test_backup_${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); toast('Test data exported', 'success');
+}
+
+function importTestData(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.questions && Array.isArray(data.questions)) {
+        editingTest.questions = data.questions; $('#testTitle').value = data.title || 'Imported Test'; $('#testDesc').value = data.description || '';
+        $('#testDuration').value = data.duration || 60; $('#testPosMarks').value = data.posMarks || 4; $('#testNegMarks').value = data.negMarks || 1;
+        renderQuestionTable(); toast('Test data imported successfully', 'success');
+      } else throw new Error('Invalid format');
+    } catch (err) { toast('Failed to parse JSON file', 'error'); }
+  };
+  reader.readAsText(file); input.value = '';
+}
+
+function renderModResults(results) {
+  const c = $('#tabContent');
+  c.innerHTML = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3>Student Results (${results.length})</h3><button class="btn btn-secondary" id="exportCsv" ${results.length === 0 ? 'disabled' : ''}>⬇ Export CSV</button></div>
+    ${results.length ? `<div class="table-wrap"><table><thead><tr><th>Name</th><th>Roll Number</th><th>Test</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th></tr></thead><tbody>${results.map(r => `<tr><td>${escapeHtml(r.fullName)}</td><td>${escapeHtml(r.rollNumber)}</td><td>${escapeHtml(r.testTitle)}</td><td><strong style="color:var(--highlight)">${r.score}</strong></td><td style="color:var(--success)">${r.correct}</td><td style="color:var(--danger)">${r.wrong}</td><td>${r.skipped}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty-state"><div class="icon">📊</div><p>No student submissions yet.</p></div>`}</div>`;
+  $('#exportCsv').onclick = () => {
+    const rows = [['Name', 'Roll', 'Test', 'Score', 'Correct', 'Wrong', 'Skipped']];
+    results.forEach(r => rows.push([r.fullName, r.rollNumber, r.testTitle, r.score, r.correct, r.wrong, r.skipped]));
+    const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\n'), blob = new Blob([csv], { type: 'text/csv' }), url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = 'results.csv'; a.click();
+  };
+}
+
+function renderModStudents(students) {
+  const c = $('#tabContent');
+  c.innerHTML = `<div class="card"><h3>Registered Students (${students.length})</h3>${students.length ? `<div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Name</th><th>Roll Number</th><th>Email</th><th>Phone</th><th>Registered</th></tr></thead><tbody>${students.map(s => `<tr><td>${escapeHtml(s.FullName)}</td><td>${escapeHtml(s.RollNumber)}</td><td>${escapeHtml(s.Email || '—')}</td><td>${escapeHtml(s.Phone || '—')}</td><td>${fmtDate(s.Timestamp)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty-state"><div class="icon">👥</div><p>No students registered yet.</p></div>`}</div>`;
+}
+</script>
+</body>
+</html>
