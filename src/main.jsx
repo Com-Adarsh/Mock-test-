@@ -50,24 +50,23 @@ function CreateTest(){
   const saveDraft=()=>{setSaved(true);setMessage({type:'success',text:'Draft saved. You can continue editing or publish it when validation passes.'})}
   const publish=async()=>{
     setMessage(null)
-    const error=validate()
-    if(error){setMessage({type:'error',text:error});return}
+    const validationError=validate()
+    if(validationError){setMessage({type:'error',text:validationError});return}
+    const endpoint=import.meta.env.VITE_APPS_SCRIPT_URL||import.meta.env.VITE_GAS_API_URL
+    if(!endpoint){setMessage({type:'error',text:'Google Apps Script URL is not configured. Nothing was published.'});return}
     setBusy(true)
     const testId=`test-${Date.now()}`
-    const payload={testId,title:title.trim(),description,duration:Number(duration),sections,questions:questions.map(({answer,...q})=>q),status:'published'}
+    const payload={id:testId,title:title.trim(),description:description.trim(),duration:Number(duration),posMarks:4,negMarks:1,status:'Published',questions:questions.map(q=>({...q,page:q.page||q.section,negMarks:q.negMarks||1}))}
     try{
-      const endpoint=import.meta.env.VITE_APPS_SCRIPT_URL
-      if(endpoint){
-        const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'publishTest',...payload})})
-        if(!response.ok) throw new Error(`Backend returned ${response.status}`)
-        const result=await response.json()
-        if(!result.success) throw new Error(result.error||'The backend did not confirm publication.')
-      }
+      const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'modSaveTest',token:import.meta.env.VITE_MODERATOR_TOKEN||'',test:payload})})
+      if(!response.ok) throw new Error(`Backend returned ${response.status}`)
+      const result=await response.json()
+      if(!result.success) throw new Error(result.message||'The backend did not confirm publication.')
       setStatus('published');setSaved(true);setMessage({type:'success',text:`Test published successfully. Test ID: ${testId}`})
     }catch(error){setMessage({type:'error',text:`Publication failed: ${error.message}`})}
     finally{setBusy(false)}
   }
-  const unpublish=async()=>{setBusy(true);setMessage(null);try{const endpoint=import.meta.env.VITE_APPS_SCRIPT_URL;if(endpoint){const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'unpublishTest',testId:title.trim()})});if(!response.ok) throw new Error(`Backend returned ${response.status}`);const result=await response.json();if(!result.success) throw new Error(result.error||'The backend did not confirm unpublishing.')}setStatus('unpublished');setMessage({type:'success',text:'Test unpublished. Existing questions and results were preserved.'})}catch(error){setMessage({type:'error',text:`Unpublish failed: ${error.message}`})}finally{setBusy(false)}}
+  const unpublish=async()=>{setMessage(null);const endpoint=import.meta.env.VITE_APPS_SCRIPT_URL||import.meta.env.VITE_GAS_API_URL;if(!endpoint){setMessage({type:'error',text:'Google Apps Script URL is not configured. Nothing was unpublished.'});return}setBusy(true);try{const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'modPublishTest',token:import.meta.env.VITE_MODERATOR_TOKEN||'',testId:title.trim(),publish:false})});if(!response.ok) throw new Error(`Backend returned ${response.status}`);const result=await response.json();if(!result.success) throw new Error(result.message||'The backend did not confirm unpublishing.');setStatus('unpublished');setMessage({type:'success',text:'Test unpublished. Existing questions and results were preserved.'})}catch(error){setMessage({type:'error',text:`Unpublish failed: ${error.message}`})}finally{setBusy(false)}}
   const stepNames=['Details','PDF Upload','Crop Questions','Answer Keys','Publish']
   return <><div className="page-title"><div><p className="eyebrow">Moderator / Test management</p><h1>Create new test</h1><p className="muted">Build a test in one connected workflow. Drafts stay private until you publish.</p></div><span className={'badge '+(status==='published'?'published':'draft')}>{status==='published'?'Published':status==='unpublished'?'Unpublished':saved?'Saved':'Draft'}</span></div><div className="creator-steps">{stepNames.map((name,index)=><button type="button" className={step===index+1?'active':''} onClick={()=>setStep(index+1)} key={name}><b>{index+1}</b>{name}</button>)}</div><section className="panel creator-panel">{message&&<div className={message.type==='error'?'error-box':'success-box'} role="status">{message.type==='error'?<AlertCircle/>:<CheckCircle2/>}{message.text}</div>}{step===1&&<div className="creator-form"><h2>Test details</h2><label>Test title<input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. CUSAT CAT Mock 01"/></label><label>Description<textarea value={description} onChange={e=>setDescription(e.target.value)} placeholder="Add instructions for students..."/></label><div className="form-grid"><label>Duration (minutes)<input type="number" min="1" value={duration} onChange={e=>setDuration(e.target.value)}/></label><label>Maximum attempts<input type="number" min="1" defaultValue="1"/></label></div><label>Result visibility<select defaultValue="after"><option value="after">After submission</option><option value="manual">When released</option></select></label></div>}{step===2&&<div className="creator-form"><h2>Upload question paper</h2><p className="muted">Choose a PDF up to 20 MB.</p><label className="file-drop"><UploadCloud/><span>{file?file.name:'Select a PDF file'}</span><input type="file" accept="application/pdf" onChange={e=>setFile(e.target.files?.[0]||null)}/></label></div>}{step===3&&<div className="creator-form"><h2>Crop questions</h2><p className="muted">Add each question after reviewing its PDF crop.</p><button type="button" className="secondary-btn" onClick={addQuestion}><Plus/> Add question</button>{questions.map((q,index)=><div className="question-row" key={q.id}><b>Question {index+1}</b><select value={q.section} onChange={e=>updateQuestion(q.id,'section',e.target.value)}>{sections.map(section=><option key={section}>{section}</option>)}</select><input placeholder="Marks" type="number" min="1" value={q.marks} onChange={e=>updateQuestion(q.id,'marks',e.target.value)}/></div>)}</div>}{step===4&&<div className="creator-form"><h2>Answer keys</h2><p className="muted">Set one correct answer and valid marks for every question.</p>{questions.map((q,index)=><label key={q.id}>Question {index+1} correct answer<select value={q.answer} onChange={e=>updateQuestion(q.id,'answer',e.target.value)}><option value="">Select answer</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>)}</div>}{step===5&&<div className="creator-form"><h2>Publish test</h2><p className="muted">Publishing makes this test available to students only after backend confirmation.</p><div className="publish-actions"><button type="button" className="secondary-btn" onClick={saveDraft} disabled={busy}>Save draft</button>{status==='published'?<button type="button" className="secondary-btn" onClick={unpublish} disabled={busy}>{busy?'Updating...':'Unpublish test'}</button>:<button type="button" className="primary-btn" onClick={publish} disabled={busy}>{busy?'Publishing...':'Publish test'} <CheckCircle2/></button>}</div></div>}<div className="creator-footer"><button type="button" className="secondary-btn" onClick={()=>setStep(s=>Math.max(1,s-1))} disabled={step===1}>Back</button><button type="button" className="primary-btn" onClick={()=>setStep(s=>Math.min(5,s+1))} disabled={step===5}>Continue <ChevronRight/></button></div></section></>
 }
@@ -82,7 +81,7 @@ function StudentShell(){
     if(!endpoint){setLoading(false);setError('Student test service is not configured.');return}
     setLoading(true);setError('')
     try{
-      const response=await fetch(`${endpoint}${endpoint.includes('?')?'&':'?'}action=getAvailableTests`,{headers:{Accept:'application/json'}})
+      const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8',Accept:'application/json'},body:JSON.stringify({action:'listTests'})})
       if(!response.ok) throw new Error(`Test service returned ${response.status}.`)
       const result=await response.json()
       if(result.success===false) throw new Error(result.error||'The test service could not load available tests.')
