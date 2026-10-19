@@ -217,7 +217,7 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ⚠️ REPLACE WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
-const GAS_URL = 'PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyh2DLfzg1thOd6YXCXKTHrKe0sfjcfEo1q9k4TB6iU38G3cEi5rf-OJCx5MAL97w3R/exec';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -247,7 +247,7 @@ function withSpinner(btn, label = 'Loading…') {
 /* ---------- API & Local Fallback ---------- */
 const API = {
   async call(action, body = {}) {
-    if (!GAS_URL || GAS_URL.includes('PASTE_YOUR')) {
+    if (!GAS_URL || GAS_URL.includes('https://script.google.com/macros/s/AKfycbyh2DLfzg1thOd6YXCXKTHrKe0sfjcfEo1q9k4TB6iU38G3cEi5rf-OJCx5MAL97w3R/exec')) {
       return LocalDB.handle(action, body);
     }
     const token = localStorage.getItem('sfi_token') || localStorage.getItem('sfi_mod_token');
@@ -271,7 +271,7 @@ const LocalDB = {
   init() {
     const users = this._get('users', []);
     if (!users.find(u => u.role === 'moderator')) {
-      users.push({ id: 'mod_default', name: 'Administrator', email: 'admin@sfi.edu', password: 'admin123', role: 'moderator', createdAt: Date.now() });
+      users.push({ id: 'mod_default', name: 'Administrator', email: 'sficusathelpdesk@gmail.com', password: 'sficusat2026', role: 'moderator', createdAt: Date.now() });
       this._set('users', users);
     }
   },
