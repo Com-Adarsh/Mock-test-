@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Online test</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<style>
+:root{--bg:#fff;--sf:#fff;--ink:#0d0d0d;--mu:#555;--ln:#cfcfcf;--pr:#d00020;--prt:#fff;--ok:#0d0d0d;--bad:#d00020;--nv:#ececec;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0a0a0a;--sf:#161616;--ink:#f5f5f5;--mu:#a8a8a8;--ln:#333;--pr:#ff3b4f;--prt:#0a0a0a;--ok:#f5f5f5;--bad:#ff3b4f;--nv:#2a2a2a;color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);background:var(--bg);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
+header{padding:12px 14px;background:#000;color:#fff;border-bottom:3px solid var(--pr)}
+header h1{margin:0;font-size:17px;font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:12px}
+h2,h3{margin:0 0 8px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:12px;margin-bottom:12px}
+.mu{color:var(--mu);margin:6px 0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+#clock{font-size:20px;font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:var(--ink)}
+button{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:7px 12px;cursor:pointer}
+button.pri{background:var(--pr);border-color:var(--pr);color:var(--prt)}
+button:disabled{opacity:.5}
+input,select{background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:6px 8px}
+:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+.tabs button.on{background:var(--pr);color:var(--prt);border-color:var(--pr)}
+.exam{display:grid;grid-template-columns:1fr 270px;gap:12px;align-items:start}
+@media(max-width:760px){.exam{grid-template-columns:1fr}}
+#qimg{max-width:100%;display:block;margin:10px 0;background:#fff;border:1px solid var(--ln)}
+.opt{display:inline-flex;gap:6px;align-items:center;margin:0 10px 8px 0;padding:6px 12px;border:1px solid var(--ln);border-radius:6px}
+.pal{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.pal button{padding:8px 0;font-weight:600;border-color:transparent}
+.s0{background:var(--nv);color:var(--ink)}
+.s1{background:var(--bad);color:var(--prt)}
+.s2{background:var(--ok);color:var(--prt)}
+.s3{background:var(--sf);color:var(--bad);box-shadow:inset 0 0 0 3px var(--bad)}
+.s4{background:var(--ok);color:var(--prt);box-shadow:0 0 0 3px var(--bad)}
+.pal .cur{outline:2px solid var(--ink);outline-offset:1px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+#leg div{margin-bottom:4px;font-size:13px}
+#fin{width:100%;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat b{font-size:26px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:6px;border-bottom:1px solid var(--ln);text-align:left}
+.wx{overflow-x:auto}
+td img{max-width:100%;background:#fff}
+.r-ok{color:var(--ok);font-weight:600}.r-bad{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<header><h1>Online test</h1></header>
+<main>
+
+<section id="join" class="card">
+<h2>Join a test</h2>
+<p class="mu">Enter your details, choose the test and press Start. The timer begins immediately, and each test can be attempted once.</p>
+<div class="row"><label>Full name <input id="nm" autocomplete="name"></label><label>Roll number <input id="rl"></label></div>
+<div class="row"><label>Test <select id="tsel"></select></label><button id="go" class="pri">Start test</button></div>
+<p id="msg" class="mu" role="status"></p>
+</section>
+
+<section id="exam" hidden>
+<div class="card top"><strong id="en"></strong><span>Time left <b id="clock"></b></span></div>
+<div id="sects" class="row tabs"></div>
+<div class="exam">
+<div class="card">
+<div id="qh"></div>
+<img id="qimg" alt="Question">
+<div id="ans"></div>
+<div class="row">
+<button id="sv" class="pri">Save and next</button>
+<button id="mkb">Mark for review and next</button>
+<button id="clr">Clear response</button>
+<button id="pr">Previous</button>
+</div>
+</div>
+<aside class="card">
+<div id="pal" class="pal"></div>
+<div id="leg"></div>
+<button id="fin" class="pri">Submit test</button>
+</aside>
+</div>
+</section>
+
+<section id="res" hidden></section>
+</main>
+
+<script>
+/* Paste the Web app URL from Apps Script (Deploy > Manage deployments) here. */
+const API='PASTE_YOUR_WEB_APP_URL_HERE';
+
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>{s=Math.max(0,s);return [s/3600|0,(s/60|0)%60,s%60].map(n=>String(n).padStart(2,'0')).join(':')};
+const msg=t=>{$('#msg').textContent=t};
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const get=async q=>(await fetch(API+'?'+q)).json();
+const post=async o=>(await fetch(API,{method:'POST',body:JSON.stringify(o)})).json();
+let T,E,who;
+
+(async()=>{
+  try{
+    const r=await get('action=tests'),sel=$('#tsel');
+    r.tests.forEach(t=>sel.add(new Option(t.title+' ('+t.durationMin+' min)',t.id)));
+    const p=new URLSearchParams(location.search).get('t');
+    if(p)sel.value=p;
+    if(!r.tests.length){msg('No tests are open right now.');$('#go').disabled=true}
+  }catch(e){msg('Couldn’t reach the test server. Check your connection and reload.');$('#go').disabled=true}
+})();
+
+$('#go').onclick=async()=>{
+  const name=$('#nm').value.trim(),roll=$('#rl').value.trim(),id=$('#tsel').value;
+  if(!name||!roll||!id)return msg('Enter your name and roll number, then pick a test.');
+  $('#go').disabled=true;msg('Loading the question paper…');
+  try{
+    const p=await get('action=pdf&id='+encodeURIComponent(id));
+    if(p.error)throw p.error;
+    const bin=atob(p.data),u=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    const pdf=await pdfjsLib.getDocument({data:u}).promise;
+    const r=await post({action:'start',testId:id,name,roll});
+    if(r.error)throw r.error;
+    T=r.test;who={name,roll};
+    msg('Preparing questions…');
+    await prep(pdf);begin();
+  }catch(e){msg(typeof e==='string'?e:'Something went wrong. Tell your teacher.');$('#go').disabled=false}
+};
+
+async function prep(pdf){
+  const by={};
+  T.qs.forEach((q,i)=>{q.i=i;(by[q.page]=by[q.page]||[]).push(q)});
+  for(const pn of Object.keys(by)){
+    const p=await pdf.getPage(+pn),v=p.getViewport({scale:2}),c=document.createElement('canvas');
+    c.width=v.width;c.height=v.height;
+    await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;
+    for(const q of by[pn]){
+      const o=document.createElement('canvas');
+      o.width=Math.max(1,Math.round(q.w*c.width));o.height=Math.max(1,Math.round(q.h*c.height));
+      o.getContext('2d').drawImage(c,q.x*c.width,q.y*c.height,q.w*c.width,q.h*c.height,0,0,o.width,o.height);
+      q.img=o.toDataURL('image/jpeg',.9);
+    }
+  }
+  T.sec=[...new Set(T.qs.map(q=>q.sub))];
+  T.qs.forEach(q=>{q.n=T.qs.filter(x=>x.sub===q.sub).indexOf(q)+1});
+  T.ord=[...T.qs].sort((a,b)=>T.sec.indexOf(a.sub)-T.sec.indexOf(b.sub));
+}
+
+function begin(){
+  E={cur:0,resp:{},vis:{},mk:{},left:Math.max(1,T.dur||60)*60};
+  $('#join').hidden=true;$('#exam').hidden=false;
+  $('#en').textContent=T.title;$('#clock').textContent=fmt(E.left);
+  E.tm=setInterval(()=>{E.left--;$('#clock').textContent=fmt(E.left);if(E.left<=0)finish()},1000);
+  go(0);
+}
+function go(i){E.cur=i;E.vis[i]=1;render()}
+const stat=i=>{const a=!!E.resp[i],m=E.mk[i];return m?(a?4:3):a?2:E.vis[i]?1:0};
+function render(){
+  const i=E.cur,q=T.ord[i],sb=$('#sects');
+  sb.innerHTML='';
+  T.sec.forEach(s=>{const b=el('button',s===q.sub?'on':'',esc(s));b.onclick=()=>go(T.ord.findIndex(x=>x.sub===s));sb.append(b)});
+  $('#qh').textContent='Question '+q.n+' ('+q.type+'), +'+q.pos+' / −'+q.neg;
+  $('#qimg').src=q.img;
+  const a=$('#ans'),r=E.resp[i]||'';a.innerHTML='';
+  if(q.type==='NAT'){
+    const t=el('input');t.type='text';t.inputMode='decimal';t.placeholder='Type your answer';t.value=r;t.setAttribute('aria-label','Numerical answer');
+    t.oninput=()=>{E.resp[i]=t.value.trim();pal()};a.append(t);
+  }else['A','B','C','D'].forEach(o=>{
+    const l=el('label','opt'),c=el('input');
+    c.type=q.type==='MSQ'?'checkbox':'radio';c.name='opt';c.checked=r.split(',').includes(o);
+    c.onchange=()=>{
+      if(q.type==='MSQ'){const s=new Set(E.resp[i]?E.resp[i].split(','):[]);c.checked?s.add(o):s.delete(o);E.resp[i]=[...s].sort().join(',')}
+      else E.resp[i]=o;
+      pal();
+    };
+    l.append(c,' '+o);a.append(l);
+  });
+  pal();
+}
+function pal(){
+  const q=T.ord[E.cur],p=$('#pal'),c=[0,0,0,0,0];
+  p.innerHTML='';
+  T.ord.forEach((x,i)=>{
+    const s=stat(i);c[s]++;
+    if(x.sub!==q.sub)return;
+    const b=el('button','s'+s+(i===E.cur?' cur':''),x.n);b.onclick=()=>go(i);p.append(b);
+  });
+  const L=['Not visited','Not answered','Answered','Marked for review','Answered and marked'];
+  $('#leg').innerHTML=L.map((l,k)=>'<div><span class="sw s'+k+'"></span>'+l+': '+c[k]+'</div>').join('');
+}
+const nxt=()=>go(Math.min(E.cur+1,T.ord.length-1));
+$('#sv').onclick=()=>{E.mk[E.cur]=0;nxt()};
+$('#mkb').onclick=()=>{E.mk[E.cur]=1;nxt()};
+$('#clr').onclick=()=>{delete E.resp[E.cur];render()};
+$('#pr').onclick=()=>go(Math.max(E.cur-1,0));
+$('#fin').onclick=()=>{
+  const b=$('#fin');
+  if(b.dataset.c)return finish();
+  b.dataset.c=1;b.textContent='Click again to submit';
+  setTimeout(()=>{delete b.dataset.c;b.textContent='Submit test'},4000);
+};
+
+function finish(){
+  if(E.done)return;
+  E.done=true;clearInterval(E.tm);
+  const A={};T.ord.forEach((q,i)=>{if(E.resp[i])A[q.i]=E.resp[i]});
+  $('#exam').hidden=true;$('#res').hidden=false;
+  send(A);
+}
+async function send(A){
+  const R=$('#res');
+  R.innerHTML='<div class="card">Submitting your answers…</div>';
+  try{
+    const r=await post({action:'submit',testId:T.id,roll:who.roll,answers:A});
+    if(r.error)throw r.error;
+    show(r);
+  }catch(e){
+    R.innerHTML='<div class="card"><p>'+esc(typeof e==='string'?e:'Your answers couldn’t be sent.')+' Keep this page open.</p></div>';
+    const b=el('button','pri','Try again');b.onclick=()=>send(A);R.firstChild.append(b);
+  }
+}
+const LB={ok:'Correct',bad:'Incorrect',skip:'Skipped',nokey:'Not scored'};
+function show(r){
+  const big=(v,l)=>'<div class="card"><b class="stat">'+v+'</b><br>'+l+'</div>';
+  $('#res').innerHTML='<h2>'+esc(T.title)+'</h2>'
+    +(r.status==='late'?'<div class="card">Your submission arrived after the time limit and is marked late for your teacher.</div>':'')
+    +'<div class="stats">'+big('<b>'+r.score+' / '+r.total+'</b>','Score')+big(r.correct,'Correct')+big(r.wrong,'Incorrect')+big(r.skipped,'Skipped')+'</div>'
+    +'<div class="card wx"><h3>Your answers</h3><table><thead><tr><th>Question<th>Your answer<th>Correct answer<th>Result<th>Marks<th></tr></thead><tbody id="dt"></tbody></table></div>';
+  const tb=$('#dt');
+  r.details.forEach((d,i)=>{
+    const q=T.qs[i],row=el('tr',null,'<td>'+esc(q.sub)+' Q'+q.n+'</td><td>'+(esc(d.r)||'–')+'</td><td>'+(esc(d.ans)||'–')+'</td><td class="r-'+d.st+'">'+LB[d.st]+'</td><td>'+d.m+'</td>');
+    const v=el('td'),b=el('button',null,'View');v.append(b);row.append(v);
+    const x=el('tr');x.hidden=true;x.innerHTML='<td colspan="6"><img src="'+q.img+'" alt="Question"></td>';
+    b.onclick=()=>{x.hidden=!x.hidden};
+    tb.append(row,x);
+  });
+}
+</script>
+</body>
+</html>
