@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PDF2CBT replica: turn a question PDF into a mock exam</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<style>
+:root{--bg:#fff;--sf:#fff;--ink:#0d0d0d;--mu:#555;--ln:#cfcfcf;--pr:#d00020;--prt:#fff;--ok:#0d0d0d;--bad:#d00020;--mk:#d00020;--nv:#ececec;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0a0a;--sf:#161616;--ink:#f5f5f5;--mu:#a8a8a8;--ln:#333;--pr:#ff3b4f;--prt:#0a0a0a;--ok:#f5f5f5;--bad:#ff3b4f;--mk:#ff3b4f;--nv:#2a2a2a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a0a0a;--sf:#161616;--ink:#f5f5f5;--mu:#a8a8a8;--ln:#333;--pr:#ff3b4f;--prt:#0a0a0a;--ok:#f5f5f5;--bad:#ff3b4f;--mk:#ff3b4f;--nv:#2a2a2a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:6px 24px;align-items:center;padding:10px 14px;background:#000;color:#fff;border-bottom:3px solid var(--pr)}
+header h1{font-size:17px;margin:0;font-weight:600}
+nav button{border:0;background:none;padding:6px 2px;margin-right:14px;color:#bbb;border-bottom:2px solid transparent;border-radius:0}
+nav button.on{color:#fff;border-color:var(--pr);font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:12px}
+h2,h3{margin:0 0 8px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:12px;margin-bottom:12px}
+.mu{color:var(--mu);margin:0 0 6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+button{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:7px 12px;cursor:pointer}
+button.pri{background:var(--pr);border-color:var(--pr);color:var(--prt)}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select,textarea{background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:6px 8px}
+input[type=number]{width:80px}
+textarea{width:100%;height:80px}
+:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+.stage{position:relative;max-width:900px;margin:0 auto;touch-action:none;cursor:crosshair;border:1px solid var(--ln);user-select:none}
+.stage canvas{display:block;width:100%;height:auto;background:#fff}
+.box,.sel{position:absolute;pointer-events:none;border:2px solid var(--pr);background:color-mix(in srgb,var(--pr) 15%,transparent)}
+.sel{border-style:dashed}
+.box span{position:absolute;top:0;left:0;background:var(--pr);color:var(--prt);font-size:11px;padding:0 4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:6px;border-bottom:1px solid var(--ln);text-align:left}
+td input{width:90px}
+.wx{overflow-x:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+#clock{font-size:20px;font-variant-numeric:tabular-nums}
+.tabs button.on{background:var(--pr);color:var(--prt);border-color:var(--pr)}
+.exam{display:grid;grid-template-columns:1fr 270px;gap:12px;align-items:start}
+@media(max-width:760px){.exam{grid-template-columns:1fr}}
+#qimg{max-width:100%;display:block;margin:10px 0;background:#fff;border:1px solid var(--ln)}
+.opt{display:inline-flex;gap:6px;align-items:center;margin:0 10px 8px 0;padding:6px 12px;border:1px solid var(--ln);border-radius:6px}
+.pal{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.pal button{padding:8px 0;font-weight:600;border-color:transparent}
+.s0{background:var(--nv);color:var(--ink)}
+.s1{background:var(--bad);color:var(--prt)}
+.s2{background:var(--ok);color:var(--prt)}
+.s3{background:var(--sf);color:var(--bad);box-shadow:inset 0 0 0 3px var(--bad)}
+.s4{background:var(--ok);color:var(--prt);box-shadow:0 0 0 3px var(--bad)}
+.pal .cur{outline:2px solid var(--ink);outline-offset:1px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+#leg div{margin-bottom:4px;font-size:13px}
+#fin{width:100%;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat b{font-size:26px;font-weight:600}
+.bar{height:8px;background:var(--nv);border-radius:4px;min-width:80px}
+.bar i{display:block;height:100%;background:var(--pr);border-radius:4px}
+.r-ok{color:var(--ok);font-weight:600}.r-bad{color:var(--bad);font-weight:600}
+td img{max-width:100%;background:#fff}
+</style>
+</head>
+<body>
+<header>
+<h1>pdf2cbt replica</h1>
+<nav>
+<button id="tb-reg" hidden onclick="tab('reg')">Register</button>
+<button id="tb-maker" class="on" onclick="tab('maker')">Test maker</button>
+<button id="tb-test" onclick="tab('test')">Take test</button>
+<button id="tb-results" onclick="tab('results')">Results</button>
+</nav>
+</header>
+<main>
+
+<section id="maker">
+<div class="card">
+<h2>Cut questions out of your PDF</h2>
+<p class="mu">Open a PDF, set the section, type and marks, then drag a box around each question. Type the correct answers in the list below (MCQ: B, MSQ: A,C, NAT: 4.5). Everything stays in your browser.</p>
+<div class="row"><input type="file" id="pdf" accept="application/pdf"><span id="msg" class="mu"></span></div>
+<div class="row">
+<label>Section <input id="subj" value="Physics" size="10"></label>
+<label>Type <select id="ty"><option>MCQ</option><option>MSQ</option><option>NAT</option></select></label>
+<label>Marks for correct <input id="pos" type="number" value="4"></label>
+<label>Marks lost for wrong <input id="neg" type="number" value="1"></label>
+</div>
+</div>
+<div class="card">
+<div class="row"><button id="pv">Previous page</button><span id="pi">No PDF open</span><button id="nx">Next page</button></div>
+<div id="stage" class="stage"><canvas id="cv" width="600" height="200"></canvas></div>
+</div>
+<div class="card wx">
+<h2>Questions</h2>
+<table><thead><tr><th>#<th>Question<th>Type<th>Page<th>Marks<th>Answer<th></tr></thead><tbody id="ql"></tbody></table>
+<p id="qe" class="mu">No questions yet. Drag a box on the page above.</p>
+</div>
+<div class="card" id="pub" hidden>
+<h2>Publish for students</h2>
+<p class="mu">Uploads the open PDF, your boxes and the answer key so registered students can take the test. Share this page with students as contributors so they can register.</p>
+<div class="row"><label>Test title <input id="ptitle" value="Mock test"></label><label>Duration in minutes <input id="pdur" type="number" value="180" min="1"></label><button id="pbtn" class="pri">Publish test</button></div>
+<p id="pmsg" class="mu"></p>
+<h3>Published tests</h3><div id="plist"></div>
+<h3>Registrations and results</h3>
+<div class="wx"><table><thead><tr><th>Name<th>Roll number<th>Test<th>Score<th>Correct<th>Incorrect<th>Skipped</tr></thead><tbody id="rlist"></tbody></table></div>
+<p id="rempty" class="mu">No students have registered yet.</p>
+</div>
+<div class="card">
+<h2>Save or restore test data</h2>
+<p class="mu">Test data holds your boxes and answers, not the PDF. Copy it somewhere safe, and paste it back here later with the same PDF open.</p>
+<textarea id="js" aria-label="Test data"></textarea>
+<div class="row"><button id="exp">Export test data</button><button id="imp">Load test data</button></div>
+</div>
+</section>
+
+<section id="reg" hidden>
+<div class="card">
+<h2>Student registration</h2>
+<p id="rst" class="mu">Not registered yet.</p>
+<div class="row"><label>Full name <input id="rname" autocomplete="name"></label><label>Roll number <input id="rroll"></label><button id="rbtn" class="pri">Register</button></div>
+<p id="rmsg" class="mu"></p>
+</div>
+<div class="card"><h2>Available tests</h2><div id="tl"><p class="mu">No tests have been published yet.</p></div></div>
+</section>
+
+<section id="test" hidden>
+<div id="setup" class="card">
+<h2>Test settings</h2>
+<p id="tinfo" class="mu"></p>
+<div class="row" id="sset">
+<label>Test name <input id="tname" value="Mock test"></label>
+<label>Duration in minutes <input id="dur" type="number" value="180" min="1"></label>
+</div>
+<button id="start" class="pri">Start test</button>
+</div>
+<div id="exam" hidden>
+<div class="card top"><strong id="en"></strong><span>Time left <b id="clock"></b></span></div>
+<div id="sects" class="row tabs"></div>
+<div class="exam">
+<div class="card">
+<div id="qh"></div>
+<img id="qimg" alt="Question">
+<div id="ans"></div>
+<div class="row">
+<button id="sv" class="pri">Save and next</button>
+<button id="mkb">Mark for review and next</button>
+<button id="clr">Clear response</button>
+<button id="pr">Previous</button>
+</div>
+</div>
+<aside class="card">
+<div id="pal" class="pal"></div>
+<div id="leg"></div>
+<button id="fin" class="pri">Submit test</button>
+</aside>
+</div>
+</div>
+</section>
+
+<section id="results" hidden><div id="rbody"></div></section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>{s=Math.max(0,s);return [s/3600|0,(s/60|0)%60,s%60].map(n=>String(n).padStart(2,'0')).join(':')};
+const tm=t=>(t/60|0)+'m '+(t%60)+'s';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const S={pdf:null,pg:1,qs:[],ex:null,res:null};
+const subs=()=>[...new Set(S.qs.map(q=>q.sub))];
+const num=q=>S.qs.filter(x=>x.sub===q.sub).indexOf(q)+1;
+
+function tab(n){
+  ['maker','reg','test','results'].forEach(t=>{$('#'+t).hidden=t!==n;$('#tb-'+t).classList.toggle('on',t===n)});
+  if(n==='test')setup();
+  if(n==='results')showRes();
+}
+
+/* ---------- Test maker ---------- */
+$('#pdf').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;S.file=f;
+  $('#msg').textContent='Opening…';
+  try{S.pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;S.pg=1;$('#msg').textContent=S.pdf.numPages+' pages';draw()}
+  catch(x){$('#msg').textContent='Couldn’t open that PDF. Try another file.'}
+};
+let busy=0,again=0;
+async function draw(){
+  if(!S.pdf)return;
+  if(busy){again=1;return}
+  busy=1;
+  try{
+    const p=await S.pdf.getPage(S.pg),v0=p.getViewport({scale:1}),w=$('#stage').clientWidth||800;
+    const v=p.getViewport({scale:w/v0.width*Math.min(Math.max(devicePixelRatio||1,1),2)}),c=$('#cv');
+    c.width=v.width;c.height=v.height;
+    await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;
+    $('#pi').textContent='Page '+S.pg+' of '+S.pdf.numPages;
+    boxes();
+  }finally{busy=0;if(again){again=0;draw()}}
+}
+function boxes(){
+  const st=$('#stage');
+  st.querySelectorAll('.box').forEach(b=>b.remove());
+  S.qs.forEach(q=>{
+    if(q.page!==S.pg)return;
+    const b=el('div','box','<span>'+esc(q.sub)+' Q'+num(q)+'</span>');
+    b.style.cssText='left:'+q.x*100+'%;top:'+q.y*100+'%;width:'+q.w*100+'%;height:'+q.h*100+'%';
+    st.append(b);
+  });
+  list();
+}
+function list(){
+  const t=$('#ql');t.innerHTML='';
+  $('#qe').hidden=S.qs.length>0;
+  S.qs.forEach((q,i)=>{
+    const r=el('tr',null,'<td>'+(i+1)+'</td><td>'+esc(q.sub)+' Q'+num(q)+'</td><td>'+q.type+'</td><td>'+q.page+'</td><td>+'+q.pos+' / −'+q.neg+'</td>');
+    const a=el('input');a.value=q.ans;a.setAttribute('aria-label','Answer');
+    a.placeholder=q.type==='NAT'?'4.5':q.type==='MSQ'?'A,C':'B';
+    a.oninput=()=>{q.ans=a.value.trim().toUpperCase()};
+    const t1=el('td'),t2=el('td'),x=el('button',null,'Remove');
+    x.onclick=()=>{S.qs.splice(i,1);boxes()};
+    t1.append(a);t2.append(x);r.append(t1,t2);t.append(r);
+  });
+}
+const stg=$('#stage');let d=null;
+stg.onpointerdown=e=>{
+  if(!S.pdf)return;
+  const r=$('#cv').getBoundingClientRect();
+  d={r,x:e.clientX-r.left,y:e.clientY-r.top,el:el('div','sel')};
+  stg.append(d.el);stg.setPointerCapture(e.pointerId);e.preventDefault();
+};
+stg.onpointermove=e=>{
+  if(!d)return;
+  d.cx=Math.max(0,Math.min(d.r.width,e.clientX-d.r.left));
+  d.cy=Math.max(0,Math.min(d.r.height,e.clientY-d.r.top));
+  Object.assign(d.el.style,{left:Math.min(d.cx,d.x)+'px',top:Math.min(d.cy,d.y)+'px',width:Math.abs(d.cx-d.x)+'px',height:Math.abs(d.cy-d.y)+'px'});
+};
+stg.onpointerup=()=>{
+  if(!d)return;
+  d.el.remove();
+  const r=d.r,w=Math.abs(d.cx-d.x),h=Math.abs(d.cy-d.y);
+  if(w>12&&h>12)S.qs.push({page:S.pg,x:Math.min(d.x,d.cx)/r.width,y:Math.min(d.y,d.cy)/r.height,w:w/r.width,h:h/r.height,sub:$('#subj').value.trim()||'Section 1',type:$('#ty').value,pos:+$('#pos').value||0,neg:+$('#neg').value||0,ans:''});
+  d=null;boxes();
+};
+$('#pv').onclick=()=>{if(S.pdf&&S.pg>1){S.pg--;draw()}};
+$('#nx').onclick=()=>{if(S.pdf&&S.pg<S.pdf.numPages){S.pg++;draw()}};
+$('#exp').onclick=()=>{$('#js').value=JSON.stringify({v:1,qs:S.qs},(k,v)=>k==='img'||k==='n'?undefined:v);$('#js').select()};
+$('#imp').onclick=()=>{
+  try{const o=JSON.parse($('#js').value);if(!Array.isArray(o.qs))throw 0;S.qs=o.qs.map(q=>({...q}));S.pg=1;boxes();draw()}
+  catch(x){$('#msg').textContent='That test data isn’t valid.'}
+};
+
+/* ---------- Test interface ---------- */
+function setup(){
+  const live=S.ex&&!S.ex.done;
+  $('#exam').hidden=!live;$('#setup').hidden=live;
+  if(live)return;
+  const n=S.qs.length;
+  $('#sset').hidden=!!S.stu;
+  $('#tinfo').textContent=S.stu?'Choose a test on the Register tab to begin.':!S.pdf?'Open a PDF in Test maker first.':!n?'Draw boxes around some questions in Test maker first.':n+' questions in '+subs().length+' section(s). '+S.qs.filter(q=>q.ans).length+' have an answer key.';
+  $('#start').disabled=!!S.stu||!(S.pdf&&n);
+}
+$('#start').onclick=async()=>{
+  $('#start').disabled=true;$('#tinfo').textContent='Preparing question images…';
+  try{
+    const by={};S.qs.forEach(q=>(by[q.page]=by[q.page]||[]).push(q));
+    for(const pn of Object.keys(by)){
+      const p=await S.pdf.getPage(+pn),v=p.getViewport({scale:2}),c=document.createElement('canvas');
+      c.width=v.width;c.height=v.height;
+      await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;
+      for(const q of by[pn]){
+        const o=document.createElement('canvas');
+        o.width=Math.max(1,Math.round(q.w*c.width));o.height=Math.max(1,Math.round(q.h*c.height));
+        o.getContext('2d').drawImage(c,q.x*c.width,q.y*c.height,q.w*c.width,q.h*c.height,0,0,o.width,o.height);
+        q.img=o.toDataURL('image/jpeg',.9);
+      }
+    }
+  }catch(x){$('#tinfo').textContent='Couldn’t prepare the questions. Try again.';$('#start').disabled=false;return}
+  S.qs.forEach(q=>{q.n=num(q)});
+  const sec=subs();
+  S.ex={qs:[...S.qs].sort((a,b)=>sec.indexOf(a.sub)-sec.indexOf(b.sub)),sec,cur:0,resp:{},vis:{},mk:{},t:{},left:Math.max(1,S.pub?S.pub.dur:+$('#dur').value||60)*60,name:S.pub?S.pub.name:$('#tname').value||'Mock test',done:false};
+  S.res=null;
+  $('#en').textContent=S.ex.name;
+  $('#clock').textContent=fmt(S.ex.left);
+  S.ex.tm=setInterval(tick,1000);
+  setup();go(0);
+};
+function tick(){
+  const e=S.ex;e.left--;e.t[e.cur]=(e.t[e.cur]||0)+1;
+  $('#clock').textContent=fmt(e.left);
+  if(e.left<=0)submit();
+}
+function go(i){const e=S.ex;e.cur=i;e.vis[i]=1;render()}
+const stat=i=>{const e=S.ex,a=!!e.resp[i],m=e.mk[i];return m?(a?4:3):a?2:e.vis[i]?1:0};
+function render(){
+  const e=S.ex,i=e.cur,q=e.qs[i];
+  const sb=$('#sects');sb.innerHTML='';
+  e.sec.forEach(s=>{const b=el('button',s===q.sub?'on':'',esc(s));b.onclick=()=>go(e.qs.findIndex(x=>x.sub===s));sb.append(b)});
+  $('#qh').textContent='Question '+q.n+' ('+q.type+'), +'+q.pos+' / −'+q.neg;
+  $('#qimg').src=q.img;
+  const a=$('#ans');a.innerHTML='';
+  const r=e.resp[i]||'';
+  if(q.type==='NAT'){
+    const t=el('input');t.type='text';t.inputMode='decimal';t.placeholder='Type your answer';t.value=r;t.setAttribute('aria-label','Numerical answer');
+    t.oninput=()=>{e.resp[i]=t.value.trim();pal()};a.append(t);
+  }else['A','B','C','D'].forEach(o=>{
+    const l=el('label','opt'),c=el('input');
+    c.type=q.type==='MSQ'?'checkbox':'radio';c.name='opt';c.checked=r.split(',').includes(o);
+    c.onchange=()=>{
+      if(q.type==='MSQ'){const s=new Set(e.resp[i]?e.resp[i].split(','):[]);c.checked?s.add(o):s.delete(o);e.resp[i]=[...s].sort().join(',')}
+      else e.resp[i]=o;
+      pal();
+    };
+    l.append(c,' '+o);a.append(l);
+  });
+  pal();
+}
+function pal(){
+  const e=S.ex,q=e.qs[e.cur],p=$('#pal'),c=[0,0,0,0,0];
+  p.innerHTML='';
+  e.qs.forEach((x,i)=>{
+    const s=stat(i);c[s]++;
+    if(x.sub!==q.sub)return;
+    const b=el('button','s'+s+(i===e.cur?' cur':''),x.n);b.onclick=()=>go(i);p.append(b);
+  });
+  const L=['Not visited','Not answered','Answered','Marked for review','Answered and marked'];
+  $('#leg').innerHTML=L.map((l,k)=>'<div><span class="sw s'+k+'"></span>'+l+': '+c[k]+'</div>').join('');
+}
+const nxt=()=>go(Math.min(S.ex.cur+1,S.ex.qs.length-1));
+$('#sv').onclick=()=>{S.ex.mk[S.ex.cur]=0;nxt()};
+$('#mkb').onclick=()=>{S.ex.mk[S.ex.cur]=1;nxt()};
+$('#clr').onclick=()=>{delete S.ex.resp[S.ex.cur];render()};
+$('#pr').onclick=()=>go(Math.max(S.ex.cur-1,0));
+$('#fin').onclick=()=>{
+  const b=$('#fin');
+  if(b.dataset.c){submit();return}
+  b.dataset.c=1;b.textContent='Click again to submit';
+  setTimeout(()=>{delete b.dataset.c;b.textContent='Submit test'},4000);
+};
+function submit(){
+  const e=S.ex;if(!e||e.done)return;
+  clearInterval(e.tm);e.done=true;
+  const b=$('#fin');delete b.dataset.c;b.textContent='Submit test';
+  S.res=evalT();if(S.pub)saveResult();tab('results');
+}
+
+/* ---------- Results ---------- */
+function right(q,r){
+  if(q.type==='NAT')return Math.abs(parseFloat(r)-parseFloat(q.ans))<=0.01;
+  return r===q.ans.split(',').map(s=>s.trim()).sort().join(',');
+}
+function evalT(){
+  const e=S.ex;
+  const rows=e.qs.map((q,i)=>{
+    const r=e.resp[i]||'',s=!q.ans?'nokey':!r?'skip':right(q,r)?'ok':'bad';
+    return{q,i,r,s,m:s==='ok'?q.pos:s==='bad'?-q.neg:0,t:e.t[i]||0};
+  });
+  return{rows,name:e.name};
+}
+const LB={ok:'Correct',bad:'Incorrect',skip:'Skipped',nokey:'No key'};
+function showRes(){
+  const R=S.res,b=$('#rbody');
+  if(!R){b.innerHTML='<div class="card">Finish a test to see your results here.</div>';return}
+  const rs=R.rows,n=k=>rs.filter(x=>x.s===k).length;
+  const sc=rs.reduce((a,x)=>a+x.m,0),tot=rs.reduce((a,x)=>a+x.q.pos,0),att=n('ok')+n('bad'),used=rs.reduce((a,x)=>a+x.t,0);
+  const big=(v,l)=>'<div class="card stat"><b>'+v+'</b><br>'+l+'</div>';
+  const per=S.ex.sec.map(s=>{
+    const r=rs.filter(x=>x.q.sub===s),m=r.reduce((a,x)=>a+x.m,0),t=r.reduce((a,x)=>a+x.q.pos,0),c=k=>r.filter(x=>x.s===k).length;
+    return '<tr><td>'+esc(s)+'</td><td>'+m+' / '+t+'</td><td>'+c('ok')+'</td><td>'+c('bad')+'</td><td>'+c('skip')+'</td><td>'+tm(r.reduce((a,x)=>a+x.t,0))+'</td><td><div class="bar"><i style="width:'+(t?Math.max(0,m/t*100):0)+'%"></i></div></td></tr>';
+  }).join('');
+  b.innerHTML='<h2>'+esc(R.name)+'</h2>'
+   +(n('nokey')?'<div class="card">'+n('nokey')+' question(s) have no answer key and aren’t scored. Add answers in Test maker, then <button id="rev">Check again</button></div>':'')
+   +'<div class="stats">'+big(sc+' / '+tot,'Score')+big(n('ok'),'Correct')+big(n('bad'),'Incorrect')+big(n('skip'),'Skipped')+big(att?Math.round(n('ok')/att*100)+'%':'–','Accuracy')+big(tm(used),'Time on questions')+'</div>'
+   +'<div class="card wx"><h3>By section</h3><table><tr><th>Section<th>Score<th>Correct<th>Incorrect<th>Skipped<th>Time<th>Share of marks</tr>'+per+'</table></div>'
+   +'<div class="card wx"><h3>Question details</h3><div class="row"><label>Show <select id="flt"><option value="all">All questions</option><option value="ok">Correct</option><option value="bad">Incorrect</option><option value="skip">Skipped</option></select></label></div>'
+   +'<table><tr><th>Question<th>Type<th>Your answer<th>Key<th>Result<th>Time<th>Marks<th></tr><tbody id="dt"></tbody></table></div>';
+  if($('#rev'))$('#rev').onclick=()=>{S.res=evalT();showRes()};
+  $('#flt').onchange=e=>det(e.target.value);
+  det('all');
+}
+function det(f){
+  const tb=$('#dt');tb.innerHTML='';
+  S.res.rows.filter(x=>f==='all'||x.s===f).forEach(x=>{
+    const r=el('tr',null,'<td>'+esc(x.q.sub)+' Q'+x.q.n+'</td><td>'+x.q.type+'</td><td>'+(esc(x.r)||'–')+'</td><td>'+(esc(x.q.ans)||'–')+'</td><td class="r-'+x.s+'">'+LB[x.s]+'</td><td>'+tm(x.t)+'</td><td>'+x.m+'</td>');
+    const v=el('td'),b=el('button',null,'View');v.append(b);r.append(v);
+    const d=el('tr');d.hidden=true;d.innerHTML='<td colspan="8"><img src="'+x.q.img+'" alt="Question"></td>';
+    b.onclick=()=>{d.hidden=!d.hidden};
+    tb.append(r,d);
+  });
+}
+/* ---------- Registration and moderator tools (shared database) ---------- */
+let DB,UID,ME=null,TESTS=[],ASSETS;
+const cleanQs=()=>JSON.parse(JSON.stringify(S.qs,(k,v)=>k==='img'||k==='n'?undefined:v));
+async function initShared(){
+  if(!window.claude)return;
+  try{
+    DB=await claude.use('db');
+    const user=await claude.use('user');
+    if(!DB||!user)return;
+    UID=await user.id();
+    if(!UID)return;
+    const mod=await user.canEdit();
+    ASSETS=await claude.use('assets');
+    S.stu=!mod;
+    DB.collection('tests').onSnapshot(q=>{TESTS=q.docs.map(d=>({id:d.id,...d.data()}));tl();pl()},()=>{});
+    if(mod){
+      $('#pub').hidden=false;
+      DB.collection('students').onSnapshot(q=>rl(q.docs.map(d=>d.data())),()=>{});
+    }else{
+      $('#tb-reg').hidden=false;$('#tb-maker').hidden=true;
+      DB.doc('students/'+UID).onSnapshot(d=>{ME=d.exists?d.data():null;tl()},()=>{});
+      tab('reg');
+    }
+  }catch(x){}
+}
+$('#rbtn').onclick=async()=>{
+  const n=$('#rname').value.trim(),r=$('#rroll').value.trim(),m=$('#rmsg');
+  if(!n||!r){m.textContent='Enter your full name and roll number.';return}
+  try{await DB.doc('students/'+UID).set({...(ME||{}),name:n,roll:r});m.textContent='You’re registered.'}
+  catch(x){m.textContent='Couldn’t register. Ask your moderator to give you contributor access.'}
+};
+function tl(){
+  const b=$('#tl');
+  if(ME&&!$('#rname').value){$('#rname').value=ME.name||'';$('#rroll').value=ME.roll||''}
+  $('#rst').textContent=ME?'Registered as '+ME.name+' (roll '+ME.roll+').':'Not registered yet. Register to unlock the tests.';
+  b.innerHTML=TESTS.length?'':'<p class="mu">No tests have been published yet.</p>';
+  TESTS.forEach(t=>{
+    const a=ME&&ME.att&&ME.att[t.id],row=el('div','row','<strong>'+esc(t.name)+'</strong><span class="mu">'+t.qs.length+' questions, '+t.dur+' min</span>');
+    if(a)row.append(el('span','r-ok','Submitted: '+a.score+' / '+a.total));
+    else{const s=el('button','pri','Start test');s.disabled=!ME;s.onclick=()=>startPub(t);row.append(s)}
+    b.append(row);
+  });
+}
+async function startPub(t){
+  const m=$('#rmsg');
+  if(S.ex&&!S.ex.done){m.textContent='Finish your current test first.';return}
+  m.textContent='Loading test…';
+  try{
+    const buf=await (await fetch('/_blob/'+t.pdf)).arrayBuffer();
+    S.pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    S.qs=JSON.parse(JSON.stringify(t.qs));S.pub=t;
+    m.textContent='';tab('test');$('#start').onclick();
+  }catch(x){m.textContent='Couldn’t load the test. Try again.'}
+}
+async function saveResult(){
+  const t=S.pub,rs=S.res.rows,c=k=>rs.filter(x=>x.s===k).length;
+  const att={...((ME&&ME.att)||{})};
+  att[t.id]={test:t.name,score:rs.reduce((a,x)=>a+x.m,0),total:rs.reduce((a,x)=>a+x.q.pos,0),ok:c('ok'),bad:c('bad'),skip:c('skip'),at:Date.now()};
+  S.pub=null;
+  try{await DB.doc('students/'+UID).set({...ME,att})}catch(x){}
+}
+$('#pbtn').onclick=async()=>{
+  const m=$('#pmsg');
+  if(!S.file||!S.qs.length){m.textContent='Open a PDF and mark at least one question first.';return}
+  m.textContent='Uploading…';
+  try{
+    const a=await ASSETS.upload(S.file);
+    await DB.doc('tests/t'+Date.now().toString(36)).set({name:$('#ptitle').value.trim()||'Untitled test',dur:+$('#pdur').value||180,pdf:a.id,qs:cleanQs(),at:Date.now()});
+    m.textContent='Published. Students can start it from the Register tab.';
+  }catch(x){m.textContent='Couldn’t publish: '+(x.message||x.code||'unknown error')}
+};
+function pl(){
+  const b=$('#plist');
+  b.innerHTML=TESTS.length?'':'<p class="mu">Nothing published yet.</p>';
+  TESTS.forEach(t=>{
+    const r=el('div','row','<strong>'+esc(t.name)+'</strong><span class="mu">'+t.qs.length+' questions, '+t.dur+' min</span>'),x=el('button',null,'Unpublish');
+    x.onclick=async()=>{try{await DB.doc('tests/'+t.id).delete();if(ASSETS)await ASSETS.delete(t.pdf)}catch(e){}};
+    r.append(x);b.append(r);
+  });
+}
+function rl(sts){
+  const tb=$('#rlist');tb.innerHTML='';
+  sts.forEach(s=>{
+    const at=Object.values(s.att||{});
+    if(!at.length)tb.append(el('tr',null,'<td>'+esc(s.name)+'</td><td>'+esc(s.roll)+'</td><td colspan="5">Registered, no attempts yet</td>'));
+    at.forEach(a=>tb.append(el('tr',null,'<td>'+esc(s.name)+'</td><td>'+esc(s.roll)+'</td><td>'+esc(a.test)+'</td><td>'+a.score+' / '+a.total+'</td><td>'+a.ok+'</td><td>'+a.bad+'</td><td>'+a.skip+'</td>')));
+  });
+  $('#rempty').hidden=sts.length>0;
+}
+initShared();
+</script>
+</body>
+</html>
