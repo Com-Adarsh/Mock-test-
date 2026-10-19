@@ -6,73 +6,46 @@
 <title>SFI CUSAT MOCK TEST</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-  :root{
-    --primary:#1e40af; --primary-dark:#1e3a8a; --primary-light:#3b82f6;
-    --accent:#f59e0b; --success:#10b981; --danger:#ef4444; --warn:#f59e0b;
-    --bg:#f1f5f9; --card:#ffffff; --text:#0f172a; --muted:#64748b;
-    --border:#e2e8f0; --shadow:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
-  }
+  :root{--primary:#1e40af;--primary-dark:#1e3a8a;--primary-light:#3b82f6;--accent:#f59e0b;
+    --success:#10b981;--danger:#ef4444;--warn:#f59e0b;--bg:#f1f5f9;--card:#fff;
+    --text:#0f172a;--muted:#64748b;--border:#e2e8f0;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04)}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
-  a{color:var(--primary);text-decoration:none}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
   button{cursor:pointer;font-family:inherit;border:none;background:none}
   input,select,textarea{font-family:inherit;font-size:14px}
-
-  /* Header */
-  .topbar{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
-    box-shadow:0 2px 8px rgba(0,0,0,.15);position:sticky;top:0;z-index:100}
-  .topbar h1{font-size:20px;font-weight:700;letter-spacing:.3px}
+  .topbar{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15);position:sticky;top:0;z-index:100}
+  .topbar h1{font-size:20px;font-weight:700}
   .topbar .brand{display:flex;align-items:center;gap:10px}
-  .topbar .brand-icon{width:36px;height:36px;background:#fff;border-radius:8px;
-    display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:800}
+  .topbar .brand-icon{width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:800}
   .topbar .user-info{display:flex;align-items:center;gap:12px;font-size:14px}
-  .topbar .user-info .role-badge{background:rgba(255,255,255,.2);padding:3px 10px;
-    border-radius:12px;font-size:12px;font-weight:600}
-  .btn-logout{background:rgba(255,255,255,.15);color:#fff;padding:6px 14px;
-    border-radius:6px;font-size:13px;font-weight:500;transition:background .2s}
+  .topbar .role-badge{background:rgba(255,255,255,.2);padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600}
+  .btn-logout{background:rgba(255,255,255,.15);color:#fff;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500}
   .btn-logout:hover{background:rgba(255,255,255,.25)}
-
-  /* Container */
   .container{max-width:1200px;margin:0 auto;padding:24px}
-  .container.narrow{max-width:520px}
-
-  /* Landing */
-  .landing{min-height:calc(100vh - 64px);display:flex;flex-direction:column;
-    align-items:center;justify-content:center;padding:40px 20px;
-    background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%)}
+  .landing{min-height:calc(100vh - 64px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%)}
   .landing-hero{text-align:center;margin-bottom:40px}
   .landing-hero h2{font-size:42px;color:var(--primary-dark);margin-bottom:12px;font-weight:800}
   .landing-hero p{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto}
-  .signin-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:24px;max-width:720px;width:100%}
-  .signin-card{background:#fff;border-radius:16px;padding:32px 28px;box-shadow:var(--shadow);
-    border:2px solid transparent;transition:all .25s;cursor:pointer;text-align:center}
-  .signin-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(30,64,175,.12);
-    border-color:var(--primary-light)}
-  .signin-card .icon{width:64px;height:64px;border-radius:16px;margin:0 auto 16px;
-    display:flex;align-items:center;justify-content:center;font-size:32px}
+  .signin-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:720px;width:100%}
+  .signin-card{background:#fff;border-radius:16px;padding:32px 28px;box-shadow:var(--shadow);border:2px solid transparent;transition:all .25s;cursor:pointer;text-align:center}
+  .signin-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(30,64,175,.12);border-color:var(--primary-light)}
+  .signin-card .icon{width:64px;height:64px;border-radius:16px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px}
   .signin-card.student .icon{background:#dbeafe;color:var(--primary)}
   .signin-card.moderator .icon{background:#fef3c7;color:#b45309}
-  .signin-card h3{font-size:20px;margin-bottom:8px;color:var(--text)}
+  .signin-card h3{font-size:20px;margin-bottom:8px}
   .signin-card p{color:var(--muted);font-size:14px;margin-bottom:20px}
   .signin-card .btn{width:100%;padding:12px;border-radius:8px;font-weight:600;font-size:15px}
   .signin-card.student .btn{background:var(--primary);color:#fff}
   .signin-card.moderator .btn{background:#b45309;color:#fff}
-
-  /* Forms */
-  .form-card{background:#fff;border-radius:12px;padding:32px;box-shadow:var(--shadow)}
+  .form-card{background:#fff;border-radius:12px;padding:32px;box-shadow:var(--shadow);max-width:420px;width:100%}
   .form-card h2{margin-bottom:8px;color:var(--primary-dark)}
   .form-card .subtitle{color:var(--muted);margin-bottom:24px;font-size:14px}
   .form-group{margin-bottom:16px}
-  .form-group label{display:block;margin-bottom:6px;font-weight:500;font-size:14px;color:var(--text)}
-  .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;
-    border:1px solid var(--border);border-radius:8px;transition:border-color .2s}
-  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{
-    outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,64,175,.1)}
-  .btn{padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;transition:all .2s;
-    display:inline-flex;align-items:center;gap:6px;justify-content:center}
+  .form-group label{display:block;margin-bottom:6px;font-weight:500;font-size:14px}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,64,175,.1)}
+  .btn{padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
   .btn-primary{background:var(--primary);color:#fff}
   .btn-primary:hover{background:var(--primary-dark)}
   .btn-secondary{background:#fff;color:var(--text);border:1px solid var(--border)}
@@ -83,66 +56,42 @@
   .btn-block{width:100%}
   .btn:disabled{opacity:.5;cursor:not-allowed}
   .form-footer{text-align:center;margin-top:16px;font-size:14px;color:var(--muted)}
-  .form-footer a{font-weight:500}
-  .error-msg{background:#fef2f2;color:#991b1b;padding:10px 14px;border-radius:8px;
-    font-size:13px;margin-bottom:16px;border:1px solid #fecaca}
-  .info-msg{background:#eff6ff;color:#1e40af;padding:10px 14px;border-radius:8px;
-    font-size:13px;margin-bottom:16px;border:1px solid #bfdbfe}
-
-  /* Dashboard */
+  .form-footer a{font-weight:500;color:var(--primary)}
+  .error-msg{background:#fef2f2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;border:1px solid #fecaca}
+  .info-msg{background:#eff6ff;color:#1e40af;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;border:1px solid #bfdbfe}
   .dash-header{margin-bottom:24px}
   .dash-header h2{font-size:26px;color:var(--primary-dark);margin-bottom:4px}
   .dash-header p{color:var(--muted)}
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:16px;margin-bottom:28px}
-  .stat-card{background:#fff;border-radius:12px;padding:18px;box-shadow:var(--shadow);
-    border-left:4px solid var(--primary)}
-  .stat-card .label{font-size:12px;color:var(--muted);text-transform:uppercase;
-    letter-spacing:.5px;font-weight:600;margin-bottom:6px}
-  .stat-card .value{font-size:28px;font-weight:700;color:var(--text)}
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+  .stat-card{background:#fff;border-radius:12px;padding:18px;box-shadow:var(--shadow);border-left:4px solid var(--primary)}
+  .stat-card .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:6px}
+  .stat-card .value{font-size:28px;font-weight:700}
   .stat-card.success{border-left-color:var(--success)}
   .stat-card.warn{border-left-color:var(--warn)}
   .stat-card.danger{border-left-color:var(--danger)}
-
   .section{background:#fff;border-radius:12px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px}
   .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-  .section-header h3{font-size:18px;color:var(--text)}
-
+  .section-header h3{font-size:18px}
   .test-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-  .test-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;
-    transition:all .2s}
+  .test-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;transition:all .2s}
   .test-card:hover{border-color:var(--primary-light);box-shadow:var(--shadow)}
-  .test-card h4{font-size:16px;margin-bottom:8px;color:var(--text)}
+  .test-card h4{font-size:16px;margin-bottom:8px}
   .test-card .meta{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0;font-size:13px;color:var(--muted)}
-  .test-card .meta span{display:flex;align-items:center;gap:4px}
-  .test-card .desc{font-size:13px;color:var(--muted);margin-bottom:12px;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .status-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;
-    font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+  .test-card .desc{font-size:13px;color:var(--muted);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .status-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase}
   .status-draft{background:#f1f5f9;color:#475569}
   .status-published{background:#dcfce7;color:#166534}
-  .status-archived{background:#fef3c7;color:#92400e}
-  .status-completed{background:#dbeafe;color:#1e40af}
-
-  /* Tables */
   .table-wrap{overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:14px}
-  th{background:var(--bg);padding:10px 12px;text-align:left;font-weight:600;
-    color:var(--text);border-bottom:2px solid var(--border);font-size:12px;
-    text-transform:uppercase;letter-spacing:.3px}
+  th{background:var(--bg);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.3px}
   td{padding:10px 12px;border-bottom:1px solid var(--border)}
   tr:hover td{background:#f8fafc}
-
-  /* Exam interface */
   .exam-container{display:grid;grid-template-columns:1fr 280px;gap:16px;height:calc(100vh - 64px);padding:16px}
   .exam-main{background:#fff;border-radius:12px;padding:24px;overflow-y:auto;box-shadow:var(--shadow)}
-  .exam-sidebar{background:#fff;border-radius:12px;padding:16px;box-shadow:var(--shadow);
-    display:flex;flex-direction:column;overflow:hidden}
-  .exam-header{display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+  .exam-sidebar{background:#fff;border-radius:12px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+  .exam-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
   .exam-header h2{font-size:20px;color:var(--primary-dark)}
-  .timer{background:var(--primary);color:#fff;padding:8px 16px;border-radius:8px;
-    font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
+  .timer{background:var(--primary);color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
   .timer.warn{background:var(--warn)}
   .timer.danger{background:var(--danger);animation:pulse 1s infinite}
   @keyframes pulse{50%{opacity:.7}}
@@ -152,93 +101,61 @@
   .q-meta{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap}
   .q-meta .type-badge{background:var(--bg);padding:3px 10px;border-radius:6px;font-weight:600}
   .options-list{display:flex;flex-direction:column;gap:10px}
-  .option{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;
-    border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
+  .option{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
   .option:hover{border-color:var(--primary-light);background:#f8fafc}
   .option.selected{border-color:var(--primary);background:#eff6ff}
   .option input{margin-top:3px;accent-color:var(--primary)}
   .option label{flex:1;cursor:pointer;line-height:1.5}
   .nat-input{width:100%;padding:12px;border:2px solid var(--border);border-radius:8px;font-size:16px}
   .nat-input:focus{outline:none;border-color:var(--primary)}
-  .exam-actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px;
-    padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap}
+  .exam-actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap}
   .exam-actions .left-actions,.exam-actions .right-actions{display:flex;gap:8px;flex-wrap:wrap}
-
-  /* Question palette */
-  .palette-title{font-size:13px;font-weight:600;color:var(--muted);
-    text-transform:uppercase;margin-bottom:10px;letter-spacing:.5px}
+  .palette-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:10px;letter-spacing:.5px}
   .palette-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;font-size:11px}
   .palette-legend .item{display:flex;align-items:center;gap:6px}
   .palette-legend .swatch{width:18px;height:18px;border-radius:4px;border:1px solid var(--border)}
   .swatch.not-visited{background:#e2e8f0}
-  .swatch.not-answered{background:#fecaca}
   .swatch.answered{background:#bbf7d0}
+  .swatch.not-answered{background:#fecaca}
   .swatch.marked{background:#fde68a}
-  .swatch.answered-marked{background:#bbf7d0;border:2px solid #f59e0b}
-  .palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
-    overflow-y:auto;flex:1;padding:4px}
-  .palette-btn{aspect-ratio:1;border-radius:6px;border:1px solid var(--border);
-    font-weight:600;font-size:13px;cursor:pointer;transition:all .15s;background:#fff}
+  .palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;overflow-y:auto;flex:1;padding:4px}
+  .palette-btn{aspect-ratio:1;border-radius:6px;border:1px solid var(--border);font-weight:600;font-size:13px;cursor:pointer;background:#fff}
   .palette-btn:hover{transform:scale(1.05)}
   .palette-btn.active{outline:3px solid var(--primary);outline-offset:1px}
   .palette-btn.not-visited{background:#e2e8f0;color:#475569}
-  .palette-btn.not-answered{background:#fecaca;color:#991b1b}
   .palette-btn.answered{background:#bbf7d0;color:#166534}
   .palette-btn.marked{background:#fde68a;color:#92400e}
-  .palette-btn.answered-marked{background:#bbf7d0;color:#166534;border:2px solid #f59e0b}
-
-  /* Modal */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;
-    align-items:center;justify-content:center;z-index:1000;padding:20px}
-  .modal{background:#fff;border-radius:12px;max-width:500px;width:100%;
-    max-height:90vh;overflow-y:auto;padding:24px}
-  .modal h3{margin-bottom:12px;color:var(--primary-dark)}
-  .modal .summary-list{margin:16px 0}
-  .modal .summary-item{display:flex;justify-content:space-between;padding:8px 0;
-    border-bottom:1px solid var(--border);font-size:14px}
-  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-
-  /* PDF cropper */
-  .pdf-viewer{position:relative;background:#f1f5f9;border:1px solid var(--border);
-    border-radius:8px;overflow:auto;max-height:600px;margin-bottom:16px}
-  .pdf-viewer canvas{display:block;margin:0 auto}
-  .crop-box{position:absolute;border:2px dashed var(--danger);background:rgba(239,68,68,.1);
-    cursor:move}
-  .crop-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-  .crop-controls label{font-size:13px;font-weight:500}
-
-  /* Question editor */
-  .question-editor{background:#f8fafc;border:1px solid var(--border);border-radius:8px;
-    padding:16px;margin-bottom:12px}
-  .question-editor .qe-header{display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:12px;gap:10px;flex-wrap:wrap}
-  .question-editor .qe-header .q-num{font-weight:700;color:var(--primary)}
+  .question-editor{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}
+  .question-editor .qe-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+  .question-editor .q-num{font-weight:700;color:var(--primary)}
   .options-editor{display:flex;flex-direction:column;gap:8px;margin:10px 0}
   .option-row{display:flex;gap:8px;align-items:center}
   .option-row input[type="text"]{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px}
   .option-row input[type="checkbox"]{accent-color:var(--primary);width:18px;height:18px}
-  .answer-row{display:flex;gap:8px;align-items:center;margin-top:8px;padding-top:8px;
-    border-top:1px dashed var(--border)}
-  .answer-row label{font-size:13px;font-weight:500}
+  .answer-row{display:flex;gap:8px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
   .answer-row input{padding:6px 10px;border:1px solid var(--border);border-radius:6px;width:140px}
-
+  .pdf-viewer{position:relative;background:#f1f5f9;border:1px solid var(--border);border-radius:8px;overflow:auto;max-height:600px;margin-bottom:16px}
+  .pdf-viewer canvas{display:block;margin:0 auto}
+  .crop-box{position:absolute;border:2px dashed var(--danger);background:rgba(239,68,68,.1);cursor:move}
+  .crop-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
   .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
   .empty-state .icon{font-size:48px;margin-bottom:12px;opacity:.5}
-  .empty-state p{font-size:14px}
-
   .tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:20px;overflow-x:auto}
-  .tab{padding:10px 18px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;
-    margin-bottom:-2px;cursor:pointer;white-space:nowrap;font-size:14px}
+  .tab{padding:10px 18px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;white-space:nowrap;font-size:14px}
   .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
   .tab:hover{color:var(--text)}
-
-  .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;
-    padding:12px 20px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);
-    z-index:2000;font-size:14px;animation:slideIn .3s}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+  .modal{background:#fff;border-radius:12px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;padding:24px}
+  .modal h3{margin-bottom:12px;color:var(--primary-dark)}
+  .modal .summary-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:2000;font-size:14px;animation:slideIn .3s}
   .toast.success{background:var(--success)}
   .toast.error{background:var(--danger)}
+  .toast.warn{background:var(--warn)}
   @keyframes slideIn{from{transform:translateX(100%);opacity:0}}
-
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
   @media(max-width:768px){
     .exam-container{grid-template-columns:1fr;height:auto}
     .exam-sidebar{order:-1}
@@ -251,23 +168,27 @@
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div id="app"><div style="padding:40px;text-align:center;color:var(--muted)">Loading…</div></div>
 
 <script>
 /* =========================================================================
-   SFI CUSAT MOCK TEST — Unified Application
-   Architecture:
+   SFI CUSAT MOCK TEST — Frontend
    - Hash-based SPA router
-   - Role-based auth (student / moderator) with backend-style validation
-   - Data layer using localStorage (swap for Supabase/Apps Script in prod)
-   - Scoring happens in the data layer, never in the exam UI
+   - API layer that calls Apps Script when API_URL is set,
+     otherwise falls back to localStorage for local preview
+   - Scoring is performed server-side; answer keys never reach students
    ========================================================================= */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+/* ---------- CONFIG ----------
+   Set API_URL to your deployed Apps Script /exec URL for production.
+   Leave empty to use localStorage preview mode. */
+const API_URL = '';  // e.g. 'https://script.google.com/macros/s/AKfycb.../exec'
+
 /* ---------- Utilities ---------- */
-const $ = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
 const escapeHtml = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtTime = sec => {
@@ -275,8 +196,7 @@ const fmtTime = sec => {
   const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
   return (h?String(h).padStart(2,'0')+':':'') + String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 };
-const fmtDate = ts => new Date(ts).toLocaleString();
-
+const fmtDate = ts => ts ? new Date(ts).toLocaleString() : '—';
 function toast(msg, type='info'){
   const el = document.createElement('div');
   el.className = 'toast ' + type;
@@ -284,123 +204,286 @@ function toast(msg, type='info'){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 3000);
 }
+function withSpinner(btn, label='Loading…'){
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> ${label}`;
+  return () => { btn.disabled = false; btn.innerHTML = orig; };
+}
 
-/* ---------- Data Layer (localStorage-backed, simulates backend) ----------
-   In production, replace this module with fetch() calls to your API.
-   All "server" logic (scoring, validation) lives here so the UI cannot
-   bypass it. Answer keys are never sent to student clients.
--------------------------------------------------------------------------- */
-const DB = {
-  _get(k, def){ try{ return JSON.parse(localStorage.getItem('sfi_'+k)) ?? def; }catch{ return def; } },
-  _set(k, v){ localStorage.setItem('sfi_'+k, JSON.stringify(v)); },
-
-  /* Users */
-  getUsers(){ return this._get('users', []); },
-  saveUsers(u){ this._set('users', u); },
-  findUserByEmail(email){ return this.getUsers().find(u => u.email.toLowerCase() === email.toLowerCase()); },
-  createUser(data){
-    const users = this.getUsers();
-    if(users.find(u => u.email.toLowerCase() === data.email.toLowerCase()))
-      throw new Error('Email already registered');
-    const user = { id: uid(), role:'student', status:'active', createdAt: Date.now(), ...data };
-    users.push(user); this.saveUsers(users); return user;
-  },
-  /* Moderator bootstrap — only one default admin. In production, moderators
-     are created by a super-admin, never via public registration. */
-  ensureModerator(){
-    const users = this.getUsers();
-    if(!users.find(u => u.role==='moderator')){
-      users.push({
-        id:'mod_default', name:'Administrator', email:'admin@sfi.edu',
-        password:'admin123', role:'moderator', status:'active', createdAt: Date.now()
-      });
-      this.saveUsers(users);
+/* ---------- API layer ---------- */
+const API = {
+  async call(action, body={}){
+    if(!API_URL){
+      // Preview mode: handled by LocalDB below
+      return LocalDB.handle(action, body);
     }
-  },
-
-  /* Tests */
-  getTests(){ return this._get('tests', []); },
-  saveTests(t){ this._set('tests', t); },
-  getTest(id){ return this.getTests().find(t => t.id === id); },
-  saveTest(test){
-    const tests = this.getTests();
-    const i = tests.findIndex(t => t.id === test.id);
-    if(i>=0) tests[i] = test; else tests.push(test);
-    this.saveTests(tests);
-  },
-  deleteTest(id){ this.saveTests(this.getTests().filter(t => t.id !== id)); },
-
-  /* Attempts */
-  getAttempts(){ return this._get('attempts', []); },
-  saveAttempts(a){ this._set('attempts', a); },
-  getAttempt(id){ return this.getAttempts().find(a => a.id === id); },
-  getStudentAttempts(studentId){ return this.getAttempts().filter(a => a.studentId === studentId); },
-  getTestAttempts(testId){ return this.getAttempts().filter(a => a.testId === testId); },
-  saveAttempt(attempt){
-    const all = this.getAttempts();
-    const i = all.findIndex(a => a.id === attempt.id);
-    if(i>=0) all[i] = attempt; else all.push(attempt);
-    this.saveAttempts(all);
-  },
-
-  /* Server-side scoring — the ONLY place answer keys are consulted */
-  scoreAttempt(attemptId){
-    const attempt = this.getAttempt(attemptId);
-    if(!attempt) throw new Error('Attempt not found');
-    const test = this.getTest(attempt.testId);
-    if(!test) throw new Error('Test not found');
-    let correct=0, wrong=0, skipped=0, score=0;
-    for(const q of test.questions){
-      const resp = (attempt.responses||{})[q.id];
-      const isCorrect = this._compareAnswer(q, resp);
-      if(resp === undefined || resp === null || resp === ''){ skipped++; }
-      else if(isCorrect){ correct++; score += (q.marks||0); }
-      else { wrong++; score -= (q.negativeMarks||0); }
+    const token = localStorage.getItem('sfi_token');
+    const res = await fetch(API_URL, {
+      method:'POST',
+      body: JSON.stringify({ action, token, ...body })
+    });
+    const data = await res.json();
+    if(!data.ok){
+      if(data.error === 'Not authenticated'){ Auth.logout(); Router.go('#/'); }
+      throw new Error(data.error || 'Request failed');
     }
-    attempt.score = score;
-    attempt.correct = correct;
-    attempt.wrong = wrong;
-    attempt.skipped = skipped;
-    attempt.status = 'submitted';
-    attempt.submittedAt = Date.now();
-    this.saveAttempt(attempt);
-    return attempt;
-  },
-  _compareAnswer(q, resp){
-    if(resp === undefined || resp === null || resp === '') return false;
-    if(q.type === 'NAT'){
-      const a = parseFloat(String(q.answer).trim());
-      const b = parseFloat(String(resp).trim());
-      if(isNaN(a) || isNaN(b)) return false;
-      return Math.abs(a-b) < 0.01;
-    }
-    if(q.type === 'MSQ'){
-      const a = (q.answer||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean).sort().join(',');
-      const b = String(resp).split(',').map(x=>x.trim().toUpperCase()).filter(Boolean).sort().join(',');
-      return a === b;
-    }
-    // MCQ
-    return String(q.answer||'').trim().toUpperCase() === String(resp).trim().toUpperCase();
+    return data;
   }
 };
-DB.ensureModerator();
+
+/* ---------- Local fallback (preview mode) ---------- */
+const LocalDB = {
+  _get(k, d){ try{ return JSON.parse(localStorage.getItem('sfi_'+k)) ?? d; }catch{ return d; } },
+  _set(k, v){ localStorage.setItem('sfi_'+k, JSON.stringify(v)); },
+  init(){
+    const users = this._get('users', []);
+    if(!users.find(u => u.role==='moderator')){
+      users.push({ id:'mod_default', name:'Administrator', email:'admin@sfi.edu',
+        password:'admin123', role:'moderator', status:'active', createdAt: Date.now() });
+      this._set('users', users);
+    }
+  },
+  async handle(action, b){
+    this.init();
+    const users = this._get('users', []);
+    const tests = this._get('tests', []);
+    const attempts = this._get('attempts', []);
+    const responses = this._get('responses', []);
+    const token = b.token || localStorage.getItem('sfi_token');
+    const session = token ? this._get('sessions', []).find(s => s.token === token) : null;
+    const me = session ? users.find(u => u.id === session.userId) : null;
+
+    const save = () => {
+      this._set('users', users); this._set('tests', tests);
+      this._set('attempts', attempts); this._set('responses', responses);
+    };
+    const compare = (q, resp) => {
+      if(resp === undefined || resp === null || resp === '') return false;
+      if(q.type === 'NAT'){
+        const a = parseFloat(String(q.answer).trim()), b = parseFloat(String(resp).trim());
+        if(isNaN(a)||isNaN(b)) return false; return Math.abs(a-b) < 0.01;
+      }
+      if(q.type === 'MSQ'){
+        const a = (q.answer||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean).sort().join(',');
+        const bb = String(resp).split(',').map(x=>x.trim().toUpperCase()).filter(Boolean).sort().join(',');
+        return a === bb;
+      }
+      return String(q.answer||'').trim().toUpperCase() === String(resp).trim().toUpperCase();
+    };
+    const score = (att) => {
+      const qs = tests.find(t=>t.id===att.testId)?.questions || [];
+      let correct=0,wrong=0,skipped=0,score=0;
+      for(const q of qs){
+        const r = (att.responses||{})[q.id];
+        if(r===undefined||r===null||r===''){ skipped++; continue; }
+        if(compare(q,r)){ correct++; score += Number(q.marks||0); }
+        else { wrong++; score -= Number(q.negativeMarks||0); }
+      }
+      return { score, correct, wrong, skipped };
+    };
+
+    switch(action){
+      case 'register': {
+        if(users.find(u => u.email.toLowerCase() === b.email.toLowerCase()))
+          return { ok:false, error:'Email already registered' };
+        const u = { id:'u_'+uid(), name:b.name, email:b.email, password:b.password,
+          rollNumber:b.rollNumber||'', role:'student', status:'active', createdAt:Date.now() };
+        users.push(u); save();
+        const t = 'tk_'+uid();
+        this._set('sessions', [...this._get('sessions',[]), { token:t, userId:u.id, role:u.role }]);
+        return { ok:true, token:t, user:{ id:u.id, name:u.name, email:u.email, role:u.role, rollNumber:u.rollNumber } };
+      }
+      case 'login': {
+        const u = users.find(x => x.email.toLowerCase() === String(b.email||'').toLowerCase());
+        if(!u || u.password !== b.password) return { ok:false, error:'Invalid credentials' };
+        const t = 'tk_'+uid();
+        this._set('sessions', [...this._get('sessions',[]), { token:t, userId:u.id, role:u.role }]);
+        return { ok:true, token:t, user:{ id:u.id, name:u.name, email:u.email, role:u.role, rollNumber:u.rollNumber||'' } };
+      }
+      case 'listTests': {
+        if(!me || me.role !== 'student') return { ok:false, error:'Forbidden' };
+        const pub = tests.filter(t => t.status === 'published');
+        return { ok:true, tests: pub.map(t => {
+          const myAtt = attempts.filter(a => a.testId===t.id && a.studentId===me.id);
+          return {
+            id:t.id, title:t.title, description:t.description,
+            duration:t.duration, totalMarks:t.totalMarks||0,
+            attemptLimit:t.attemptLimit||1, questionCount:(t.questions||[]).length,
+            attemptsLeft: Math.max(0, (t.attemptLimit||1) - myAtt.filter(a=>a.status==='submitted').length),
+            inProgress: myAtt.find(a => a.status==='in-progress' && a.expiresAt > Date.now()) || null
+          };
+        }) };
+      }
+      case 'getTest': {
+        const t = tests.find(x => x.id === b.testId && x.status === 'published');
+        if(!t) return { ok:false, error:'Not found' };
+        const qs = (t.questions||[]).map(q => ({
+          id:q.id, orderNum:q.order, type:q.type, text:q.text, image:q.image,
+          options:q.options||[], marks:q.marks, negativeMarks:q.negativeMarks
+        }));
+        return { ok:true, test:{ id:t.id, title:t.title, duration:t.duration, totalMarks:t.totalMarks, questions:qs } };
+      }
+      case 'startAttempt': {
+        const t = tests.find(x => x.id === b.testId && x.status === 'published');
+        if(!t) return { ok:false, error:'Not found' };
+        const mine = attempts.filter(a => a.testId===b.testId && a.studentId===me.id);
+        const prog = mine.find(a => a.status==='in-progress');
+        if(prog && prog.expiresAt > Date.now()) return { ok:true, attempt:prog, resumed:true };
+        if(prog && prog.expiresAt <= Date.now()){
+          const s = score(prog); Object.assign(prog, s, { status:'submitted', submittedAt:Date.now() }); save();
+        }
+        const submitted = mine.filter(a => a.status==='submitted').length;
+        if(submitted >= (t.attemptLimit||1)) return { ok:false, error:'Attempt limit reached' };
+        const att = { id:'a_'+uid(), testId:t.id, studentId:me.id,
+          startedAt:Date.now(), expiresAt:Date.now()+t.duration*60*1000,
+          status:'in-progress', responses:{}, review:{}, score:0, correct:0, wrong:0, skipped:0 };
+        attempts.push(att); save();
+        return { ok:true, attempt:att, resumed:false };
+      }
+      case 'saveResponse': {
+        const att = attempts.find(a => a.id === b.attemptId && a.studentId === me.id);
+        if(!att) return { ok:false, error:'Not found' };
+        att.responses = att.responses || {};
+        if(b.response === '' || b.response === undefined || b.response === null) delete att.responses[b.questionId];
+        else att.responses[b.questionId] = b.response;
+        save();
+        return { ok:true };
+      }
+      case 'getAttempt': {
+        const att = attempts.find(a => a.id === b.attemptId && a.studentId === me.id);
+        if(!att) return { ok:false, error:'Not found' };
+        return { ok:true, attempt:att, responses: Object.entries(att.responses||{}).map(([q,r])=>({questionId:q,response:r})) };
+      }
+      case 'submitAttempt': {
+        const att = attempts.find(a => a.id === b.attemptId && a.studentId === me.id);
+        if(!att) return { ok:false, error:'Not found' };
+        if(att.status === 'submitted') return { ok:false, error:'Already submitted' };
+        const s = score(att); Object.assign(att, s, { status:'submitted', submittedAt:Date.now() }); save();
+        return { ok:true, ...s };
+      }
+      case 'myResults': {
+        const mine = attempts.filter(a => a.studentId === me.id && a.status === 'submitted');
+        return { ok:true, results: mine.map(a => {
+          const t = tests.find(x => x.id === a.testId);
+          return { ...a, testTitle: t?.title||'—', totalMarks: t?.totalMarks||0 };
+        }) };
+      }
+      /* ---- moderator ---- */
+      case 'modListTests': {
+        return { ok:true, tests: tests.map(t => ({
+          ...t, questionCount:(t.questions||[]).length,
+          attemptCount: attempts.filter(a=>a.testId===t.id).length
+        })) };
+      }
+      case 'modSaveTest': {
+        const t = b.test;
+        const existing = tests.find(x => x.id === t.id);
+        const qs = existing ? (existing.questions||[]) : [];
+        const totalMarks = qs.reduce((s,q)=>s+Number(q.marks||0),0);
+        if(existing){
+          Object.assign(existing, { title:t.title, description:t.description||'',
+            duration:Number(t.duration), attemptLimit:Number(t.attemptLimit||1),
+            totalMarks, updatedAt:Date.now() });
+        } else {
+          tests.push({ id:t.id || 't_'+uid(), title:t.title, description:t.description||'',
+            duration:Number(t.duration), totalMarks, attemptLimit:Number(t.attemptLimit||1),
+            status:'draft', questions:[], createdAt:Date.now(), updatedAt:Date.now() });
+        }
+        save();
+        return { ok:true, test: existing || tests[tests.length-1] };
+      }
+      case 'modDeleteTest': {
+        const i = tests.findIndex(t => t.id === b.testId);
+        if(i>=0) tests.splice(i,1);
+        save();
+        return { ok:true };
+      }
+      case 'modPublishTest': {
+        const t = tests.find(x => x.id === b.testId);
+        if(t){ t.status = b.publish ? 'published' : 'draft'; save(); }
+        return { ok:true };
+      }
+      case 'modListQuestions': {
+        const t = tests.find(x => x.id === b.testId);
+        return { ok:true, questions: (t?.questions||[]).slice().sort((a,b)=>a.order-b.order) };
+      }
+      case 'modSaveQuestion': {
+        const t = tests.find(x => x.id === b.question.testId);
+        if(!t) return { ok:false, error:'Test not found' };
+        t.questions = t.questions || [];
+        const existing = t.questions.find(q => q.id === b.question.id);
+        if(existing){ Object.assign(existing, b.question); }
+        else { t.questions.push({ ...b.question, id: b.question.id || 'q_'+uid() }); }
+        t.totalMarks = t.questions.reduce((s,q)=>s+Number(q.marks||0),0);
+        save();
+        return { ok:true, question: b.question };
+      }
+      case 'modDeleteQuestion': {
+        const t = tests.find(x => x.questions?.some(q=>q.id===b.questionId));
+        if(t){
+          t.questions = t.questions.filter(q => q.id !== b.questionId);
+          t.totalMarks = t.questions.reduce((s,q)=>s+Number(q.marks||0),0);
+          save();
+        }
+        return { ok:true };
+      }
+      case 'modReorderQuestions': {
+        const t = tests.find(x => x.id === b.testId);
+        if(t){
+          const map = {}; t.questions.forEach(q => map[q.id] = q);
+          t.questions = b.order.map((id,i) => { const q = map[id]; if(q){ q.order = i+1; } return q; }).filter(Boolean);
+          save();
+        }
+        return { ok:true };
+      }
+      case 'modAllResults': {
+        const submitted = attempts.filter(a => a.status === 'submitted');
+        return { ok:true, results: submitted.map(a => {
+          const u = users.find(x => x.id === a.studentId);
+          const t = tests.find(x => x.id === a.testId);
+          return { ...a, studentName: u?.name||'—', rollNumber: u?.rollNumber||'—',
+            testTitle: t?.title||'—', totalMarks: t?.totalMarks||0 };
+        }) };
+      }
+      case 'modStudents': {
+        const sts = users.filter(u => u.role === 'student');
+        return { ok:true, students: sts.map(u => ({
+          ...u, attemptCount: attempts.filter(a => a.studentId === u.id).length
+        })) };
+      }
+      default: return { ok:false, error:'Unknown action' };
+    }
+  }
+};
+LocalDB.init();
 
 /* ---------- Auth ---------- */
 const Auth = {
-  current(){ return DB._get('session', null); },
-  login(email, password){
-    const user = DB.findUserByEmail(email);
-    if(!user) throw new Error('No account found with that email');
-    if(user.password !== password) throw new Error('Incorrect password');
-    if(user.status !== 'active') throw new Error('Account is not active');
-    const session = { id:user.id, name:user.name, email:user.email, role:user.role };
-    DB._set('session', session);
-    return session;
+  current(){
+    const raw = localStorage.getItem('sfi_session');
+    return raw ? JSON.parse(raw) : null;
   },
-  logout(){ localStorage.removeItem('sfi_session'); },
+  async login(email, password, role){
+    const data = await API.call('login', { email, password });
+    if(data.user.role !== role) throw new Error(`This account is not a ${role}.`);
+    localStorage.setItem('sfi_token', data.token);
+    localStorage.setItem('sfi_session', JSON.stringify(data.user));
+    return data.user;
+  },
+  async register(payload){
+    const data = await API.call('register', payload);
+    localStorage.setItem('sfi_token', data.token);
+    localStorage.setItem('sfi_session', JSON.stringify(data.user));
+    return data.user;
+  },
+  logout(){
+    localStorage.removeItem('sfi_token');
+    localStorage.removeItem('sfi_session');
+  },
   requireRole(role){
     const u = this.current();
-    if(!u) { Router.go('#/'); throw new Error('Not authenticated'); }
+    if(!u){ Router.go('#/'); throw new Error('Not authenticated'); }
     if(u.role !== role){ toast('Access denied','error'); Router.go('#/'); throw new Error('Forbidden'); }
     return u;
   }
@@ -408,19 +491,19 @@ const Auth = {
 
 /* ---------- Router ---------- */
 const Router = {
-  routes: {},
-  register(path, handler){ this.routes[path] = handler; },
-  go(hash){ location.hash = hash; },
+  routes:{},
+  register(p,h){ this.routes[p] = h; },
+  go(h){ location.hash = h; },
   start(){
     window.addEventListener('hashchange', () => this.resolve());
     this.resolve();
   },
   resolve(){
     const hash = location.hash || '#/';
-    const [path, ...rest] = hash.slice(2).split('/');
+    const [path] = hash.slice(2).split('/');
     const key = '/' + (path || '');
-    const handler = this.routes[key] || this.routes['/'];
-    try { handler(rest.join('/')); } catch(e){ console.error(e); }
+    const h = this.routes[key] || this.routes['/'];
+    try { h(); } catch(e){ console.error(e); }
   }
 };
 
@@ -428,12 +511,11 @@ const Router = {
    Views
    ========================================================================= */
 
-/* ----- Landing ----- */
 function viewLanding(){
-  const app = $('#app');
-  app.innerHTML = `
+  $('#app').innerHTML = `
     <div class="topbar">
       <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div>
+      ${API_URL ? '' : '<span style="background:rgba(255,255,255,.2);padding:4px 10px;border-radius:10px;font-size:11px">PREVIEW MODE</span>'}
     </div>
     <div class="landing">
       <div class="landing-hero">
@@ -455,127 +537,111 @@ function viewLanding(){
         </div>
       </div>
     </div>`;
-  $$('.signin-card').forEach(c => c.addEventListener('click', () => {
-    Router.go('#/' + c.dataset.role + '/login');
-  }));
+  $$('.signin-card').forEach(c => c.onclick = () => Router.go('#/' + c.dataset.role + '/login'));
 }
 
-/* ----- Auth views ----- */
 function viewLogin(role){
   const isStudent = role === 'student';
-  const app = $('#app');
-  app.innerHTML = `
+  $('#app').innerHTML = `
     <div class="topbar">
       <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div>
       <button class="btn-logout" data-back>← Back</button>
     </div>
     <div class="landing">
-      <div class="form-card" style="max-width:420px;width:100%">
+      <div class="form-card">
         <h2>${isStudent ? 'Student Sign In' : 'Moderator Sign In'}</h2>
-        <p class="subtitle">${isStudent
-          ? 'Enter your credentials to access your dashboard.'
-          : 'Restricted area. Use your assigned moderator credentials.'}</p>
+        <p class="subtitle">${isStudent ? 'Enter your credentials to access your dashboard.' : 'Restricted area. Use your assigned moderator credentials.'}</p>
         <div id="err"></div>
         <form id="loginForm">
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required autocomplete="username" />
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" required autocomplete="current-password" />
-          </div>
-          <button class="btn btn-primary btn-block" type="submit">Sign In</button>
+          <div class="form-group"><label>Email</label><input type="email" name="email" required autocomplete="username"/></div>
+          <div class="form-group"><label>Password</label><input type="password" name="password" required autocomplete="current-password"/></div>
+          <button class="btn btn-primary btn-block" type="submit" id="loginBtn">Sign In</button>
         </form>
-        ${isStudent ? `
-          <div class="form-footer">
-            Don't have an account? <a href="#/student/register">Register here</a>
-          </div>` : `
-          <div class="info-msg" style="margin-top:16px">
-            <strong>Demo credentials:</strong> admin@sfi.edu / admin123<br>
-            <small>In production, moderators are provisioned by a super-admin.</small>
-          </div>`}
+        ${isStudent ? '<div class="form-footer">Don\'t have an account? <a href="#/student/register">Register here</a></div>' : ''}
+        ${!isStudent ? '<div class="info-msg" style="margin-top:16px"><strong>Demo:</strong> admin@sfi.edu / admin123</div>' : ''}
       </div>
     </div>`;
   $('[data-back]').onclick = () => Router.go('#/');
-  $('#loginForm').onsubmit = e => {
+  $('#loginForm').onsubmit = async e => {
     e.preventDefault();
+    const btn = $('#loginBtn'); const done = withSpinner(btn, 'Signing in…');
     const fd = new FormData(e.target);
     try{
-      const session = Auth.login(fd.get('email'), fd.get('password'));
-      if(session.role !== role){
-        Auth.logout();
-        $('#err').innerHTML = `<div class="error-msg">This account is not registered as a ${role}.</div>`;
-        return;
-      }
-      toast('Welcome, ' + session.name, 'success');
+      const u = await Auth.login(fd.get('email'), fd.get('password'), role);
+      toast('Welcome, ' + u.name, 'success');
       Router.go('#/' + role);
     }catch(err){
       $('#err').innerHTML = `<div class="error-msg">${escapeHtml(err.message)}</div>`;
-    }
+    } finally { done(); }
   };
 }
 
 function viewRegister(){
-  const app = $('#app');
-  app.innerHTML = `
+  $('#app').innerHTML = `
     <div class="topbar">
       <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div>
       <button class="btn-logout" data-back>← Back</button>
     </div>
     <div class="landing">
-      <div class="form-card" style="max-width:420px;width:100%">
+      <div class="form-card">
         <h2>Student Registration</h2>
         <p class="subtitle">Create your account to start attending mock tests.</p>
         <div id="err"></div>
         <form id="regForm">
-          <div class="form-group"><label>Full Name</label><input name="name" required /></div>
-          <div class="form-group"><label>Roll Number</label><input name="rollNumber" required /></div>
-          <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
-          <div class="form-group"><label>Password</label><input type="password" name="password" minlength="6" required /></div>
-          <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+          <div class="form-group"><label>Full Name</label><input name="name" required/></div>
+          <div class="form-group"><label>Roll Number</label><input name="rollNumber" required/></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" required/></div>
+          <div class="form-group"><label>Password</label><input type="password" name="password" minlength="6" required/></div>
+          <button class="btn btn-primary btn-block" type="submit" id="regBtn">Create Account</button>
         </form>
         <div class="form-footer">Already registered? <a href="#/student/login">Sign in</a></div>
       </div>
     </div>`;
   $('[data-back]').onclick = () => Router.go('#/');
-  $('#regForm').onsubmit = e => {
+  $('#regForm').onsubmit = async e => {
     e.preventDefault();
+    const btn = $('#regBtn'); const done = withSpinner(btn, 'Creating…');
     const fd = new FormData(e.target);
     try{
-      const u = DB.createUser({
+      const u = await Auth.register({
         name: fd.get('name'), rollNumber: fd.get('rollNumber'),
         email: fd.get('email'), password: fd.get('password')
       });
-      DB._set('session', { id:u.id, name:u.name, email:u.email, role:u.role });
       toast('Account created','success');
       Router.go('#/student');
     }catch(err){
       $('#err').innerHTML = `<div class="error-msg">${escapeHtml(err.message)}</div>`;
-    }
+    } finally { done(); }
   };
 }
 
-/* ----- Student Dashboard ----- */
-function viewStudentDash(){
+/* ---------- Student Dashboard ---------- */
+async function viewStudentDash(){
   const user = Auth.requireRole('student');
-  const tests = DB.getTests().filter(t => t.status === 'published');
-  const attempts = DB.getStudentAttempts(user.id);
-  const app = $('#app');
+  $('#app').innerHTML = `<div class="topbar">
+    <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div>
+    <div class="user-info"><span>${escapeHtml(user.name)}</span><span class="role-badge">Student</span>
+      <button class="btn-logout" id="logout">Sign Out</button></div></div>
+    <div class="container"><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner" style="border-color:var(--border);border-top-color:var(--primary)"></span> Loading…</div></div>`;
+  $('#logout').onclick = () => { Auth.logout(); Router.go('#/'); };
 
-  const available = tests.filter(t => {
-    return attempts.filter(a => a.testId===t.id && a.status==='submitted').length < (t.attemptLimit||1);
-  });
-  const completed = attempts.filter(a => a.status === 'submitted');
-
-  app.innerHTML = `
+  try{
+    const [testsRes, resultsRes] = await Promise.all([
+      API.call('listTests'), API.call('myResults')
+    ]);
+    renderStudentDash(user, testsRes.tests, resultsRes.results);
+  }catch(err){
+    toast(err.message, 'error');
+  }
+}
+function renderStudentDash(user, tests, results){
+  const completed = results || [];
+  const available = (tests||[]).filter(t => t.attemptsLeft > 0);
+  $('#app').innerHTML = `
     <div class="topbar">
       <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST</h1></div>
-      <div class="user-info">
-        <span>${escapeHtml(user.name)}</span>
-        <span class="role-badge">Student</span>
-        <button class="btn-logout" id="logout">Sign Out</button>
-      </div>
+      <div class="user-info"><span>${escapeHtml(user.name)}</span><span class="role-badge">Student</span>
+        <button class="btn-logout" id="logout">Sign Out</button></div>
     </div>
     <div class="container">
       <div class="dash-header">
@@ -585,9 +651,8 @@ function viewStudentDash(){
       <div class="stats-grid">
         <div class="stat-card"><div class="label">Available Tests</div><div class="value">${available.length}</div></div>
         <div class="stat-card success"><div class="label">Completed</div><div class="value">${completed.length}</div></div>
-        <div class="stat-card warn"><div class="label">In Progress</div><div class="value">${attempts.filter(a=>a.status==='in-progress').length}</div></div>
+        <div class="stat-card warn"><div class="label">In Progress</div><div class="value">${(tests||[]).filter(t=>t.inProgress).length}</div></div>
       </div>
-
       <div class="section">
         <div class="section-header"><h3>Available Tests</h3></div>
         ${available.length ? `<div class="test-list">${available.map(t => `
@@ -599,85 +664,61 @@ function viewStudentDash(){
             <div class="desc">${escapeHtml(t.description||'')}</div>
             <div class="meta">
               <span>⏱ ${t.duration} min</span>
-              <span>📝 ${t.questions?.length||0} Q</span>
-              <span>🏆 ${t.totalMarks||0} marks</span>
+              <span>📝 ${t.questionCount} Q</span>
+              <span>🏆 ${t.totalMarks} marks</span>
+              <span>🔁 ${t.attemptsLeft} attempt${t.attemptsLeft>1?'s':''} left</span>
             </div>
             <button class="btn btn-primary btn-block" data-start="${t.id}">
-              ${attempts.find(a=>a.testId===t.id && a.status==='in-progress') ? 'Resume Test' : 'Start Test'}
+              ${t.inProgress ? 'Resume Test' : 'Start Test'}
             </button>
           </div>`).join('')}</div>`
           : `<div class="empty-state"><div class="icon">📭</div><p>No tests are currently available. Check back soon.</p></div>`}
       </div>
-
       <div class="section">
         <div class="section-header"><h3>My Results</h3></div>
         ${completed.length ? `
           <div class="table-wrap"><table>
-            <thead><tr><th>Test</th><th>Submitted</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th></th></tr></thead>
-            <tbody>${completed.map(a => {
-              const t = DB.getTest(a.testId);
-              return `<tr>
-                <td>${escapeHtml(t?.title||'—')}</td>
-                <td>${fmtDate(a.submittedAt)}</td>
-                <td><strong>${a.score}</strong> / ${t?.totalMarks||0}</td>
-                <td style="color:var(--success)">${a.correct}</td>
-                <td style="color:var(--danger)">${a.wrong}</td>
-                <td>${a.skipped}</td>
-                <td><button class="btn btn-secondary" data-review="${a.id}">Review</button></td>
-              </tr>`;
-            }).join('')}</tbody>
+            <thead><tr><th>Test</th><th>Submitted</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th></tr></thead>
+            <tbody>${completed.map(a => `<tr>
+              <td>${escapeHtml(a.testTitle)}</td>
+              <td>${fmtDate(a.submittedAt)}</td>
+              <td><strong>${a.score}</strong> / ${a.totalMarks}</td>
+              <td style="color:var(--success)">${a.correct}</td>
+              <td style="color:var(--danger)">${a.wrong}</td>
+              <td>${a.skipped}</td>
+            </tr>`).join('')}</tbody>
           </table></div>`
           : `<div class="empty-state"><div class="icon">📊</div><p>No results yet. Complete a test to see your scores here.</p></div>`}
       </div>
     </div>`;
-
   $('#logout').onclick = () => { Auth.logout(); Router.go('#/'); };
   $$('[data-start]').forEach(b => b.onclick = () => startTest(b.dataset.start));
-  $$('[data-review]').forEach(b => b.onclick = () => showReview(b.dataset.review));
 }
 
-/* ----- Exam Engine ----- */
-let examState = null;
-let examTimer = null;
+/* ---------- Exam Engine ---------- */
+let examState = null, examTimer = null;
 
-function startTest(testId){
-  const user = Auth.current();
-  const test = DB.getTest(testId);
-  if(!test || test.status !== 'published'){ toast('Test unavailable','error'); return; }
-
-  // Resume or create attempt
-  let attempt = DB.getStudentAttempts(user.id).find(a => a.testId===testId && a.status==='in-progress');
-  if(!attempt){
-    const existing = DB.getStudentAttempts(user.id).filter(a => a.testId===testId && a.status==='submitted').length;
-    if(existing >= (test.attemptLimit||1)){ toast('Attempt limit reached','error'); return; }
-    attempt = {
-      id: uid(), testId, studentId: user.id,
-      startedAt: Date.now(),
-      expiresAt: Date.now() + (test.duration*60*1000),
-      status:'in-progress', responses:{}, review:{}
+async function startTest(testId){
+  try{
+    const [testRes, attemptRes] = await Promise.all([
+      API.call('getTest', { testId }),
+      API.call('startAttempt', { testId })
+    ]);
+    examState = {
+      attempt: attemptRes.attempt,
+      test: testRes.test,
+      current: 0,
+      questions: testRes.test.questions || []
     };
-    DB.saveAttempt(attempt);
-  } else {
-    // Check expiry
-    if(Date.now() > attempt.expiresAt){
-      DB.scoreAttempt(attempt.id);
-      toast('Time expired — test auto-submitted','warn');
-      Router.go('#/student'); return;
-    }
-  }
-
-  examState = {
-    attempt, test,
-    current: 0,
-    questions: test.questions || []
-  };
-  renderExam();
-  startExamTimer();
+    if(attemptRes.resumed) toast('Resumed your in-progress test', 'info');
+    renderExam();
+    startExamTimer();
+  }catch(err){ toast(err.message, 'error'); }
 }
 
 function startExamTimer(){
   clearInterval(examTimer);
-  examTimer = setInterval(() => {
+  examTimer = setInterval(async () => {
     if(!examState) return;
     const remaining = Math.floor((examState.attempt.expiresAt - Date.now())/1000);
     const timerEl = $('#examTimer');
@@ -688,7 +729,7 @@ function startExamTimer(){
     }
     if(remaining <= 0){
       clearInterval(examTimer);
-      submitExam(true);
+      await submitExam(true);
     }
   }, 1000);
 }
@@ -696,19 +737,17 @@ function startExamTimer(){
 function renderExam(){
   const { attempt, test, questions, current } = examState;
   const q = questions[current];
-  const app = $('#app');
-
-  const getQStatus = (i) => {
+  const getStatus = i => {
     const qq = questions[i];
-    const answered = attempt.responses[qq.id] !== undefined && attempt.responses[qq.id] !== '' && attempt.responses[qq.id] !== null;
-    const marked = attempt.review[qq.id];
-    if(marked && answered) return 'answered-marked';
+    const ans = attempt.responses?.[qq.id];
+    const marked = attempt.review?.[qq.id];
+    const has = ans !== undefined && ans !== '' && ans !== null;
+    if(marked && has) return 'answered-marked';
     if(marked) return 'marked';
-    if(answered) return 'answered';
+    if(has) return 'answered';
     return 'not-visited';
   };
-
-  app.innerHTML = `
+  $('#app').innerHTML = `
     <div class="topbar">
       <div class="brand"><div class="brand-icon">S</div><h1>${escapeHtml(test.title)}</h1></div>
       <div class="user-info"><span class="role-badge">Exam in progress</span></div>
@@ -716,19 +755,17 @@ function renderExam(){
     <div class="exam-container">
       <div class="exam-main">
         <div class="exam-header">
-          <div>
-            <h2>Question ${current+1} of ${questions.length}</h2>
-          </div>
+          <h2>Question ${current+1} of ${questions.length}</h2>
           <div class="timer" id="examTimer">${fmtTime(Math.floor((attempt.expiresAt - Date.now())/1000))}</div>
         </div>
         ${q ? `
           <div class="q-meta">
             <span class="type-badge">${q.type}</span>
-            <span>+${q.marks||0} / −${q.negativeMarks||0}</span>
+            <span>+${q.marks} / −${q.negativeMarks}</span>
           </div>
           <div class="question-body">
             <div class="q-text">${q.image ? `<img src="${q.image}" alt="Question"/>` : ''}${escapeHtml(q.text||'')}</div>
-            ${renderAnswerInput(q, attempt.responses[q.id])}
+            ${renderAnswerInput(q, attempt.responses?.[q.id])}
           </div>
           <div class="exam-actions">
             <div class="left-actions">
@@ -736,12 +773,11 @@ function renderExam(){
               <button class="btn btn-secondary" id="clearBtn">Clear Response</button>
             </div>
             <div class="right-actions">
-              <button class="btn btn-warn" id="markBtn">${attempt.review[q.id]?'Unmark':'Mark for Review'}</button>
+              <button class="btn btn-warn" id="markBtn">${attempt.review?.[q.id]?'Unmark':'Mark for Review'}</button>
               <button class="btn btn-primary" id="saveNextBtn">Save & Next</button>
               ${current === questions.length-1 ? `<button class="btn btn-success" id="submitBtn">Submit Test</button>` : ''}
             </div>
-          </div>
-        ` : `<div class="empty-state"><p>No questions in this test.</p></div>`}
+          </div>` : `<div class="empty-state"><p>No questions in this test.</p></div>`}
       </div>
       <div class="exam-sidebar">
         <div class="palette-title">Question Palette</div>
@@ -752,26 +788,30 @@ function renderExam(){
           <div class="item"><div class="swatch marked"></div>Marked</div>
         </div>
         <div class="palette-grid">
-          ${questions.map((qq,i) => `<button class="palette-btn ${getQStatus(i)} ${i===current?'active':''}" data-q="${i}">${i+1}</button>`).join('')}
+          ${questions.map((qq,i) => `<button class="palette-btn ${getStatus(i)} ${i===current?'active':''}" data-q="${i}">${i+1}</button>`).join('')}
         </div>
         <button class="btn btn-success btn-block" id="sideSubmit" style="margin-top:12px">Submit Test</button>
       </div>
     </div>`;
-
-  // Bind events
   $('#prevBtn')?.addEventListener('click', () => { examState.current--; renderExam(); });
-  $('#saveNextBtn')?.addEventListener('click', () => { saveCurrentResponse(); if(current < questions.length-1){ examState.current++; renderExam(); } });
-  $('#clearBtn')?.addEventListener('click', () => { delete examState.attempt.responses[q.id]; DB.saveAttempt(examState.attempt); renderExam(); });
+  $('#saveNextBtn')?.addEventListener('click', async () => {
+    await saveCurrentResponse();
+    if(current < questions.length-1){ examState.current++; renderExam(); }
+  });
+  $('#clearBtn')?.addEventListener('click', async () => {
+    delete examState.attempt.responses[q.id];
+    await API.call('saveResponse', { attemptId: examState.attempt.id, questionId: q.id, response:'' });
+    renderExam();
+  });
   $('#markBtn')?.addEventListener('click', () => {
+    examState.attempt.review = examState.attempt.review || {};
     examState.attempt.review[q.id] = !examState.attempt.review[q.id];
     if(!examState.attempt.review[q.id]) delete examState.attempt.review[q.id];
-    DB.saveAttempt(examState.attempt); renderExam();
+    renderExam();
   });
   $('#submitBtn')?.addEventListener('click', confirmSubmit);
   $('#sideSubmit')?.addEventListener('click', confirmSubmit);
   $$('.palette-btn').forEach(b => b.onclick = () => { examState.current = +b.dataset.q; renderExam(); });
-
-  // Answer input binding
   bindAnswerInput(q, attempt);
 }
 
@@ -779,11 +819,10 @@ function renderAnswerInput(q, currentVal){
   if(q.type === 'MCQ'){
     return `<div class="options-list">${(q.options||[]).map((opt,i) => {
       const letter = String.fromCharCode(65+i);
-      const sel = currentVal === letter ? 'checked' : '';
+      const sel = currentVal === letter;
       return `<label class="option ${sel?'selected':''}">
-        <input type="radio" name="opt" value="${letter}" ${sel}/>
-        <span><strong>${letter}.</strong> ${escapeHtml(opt)}</span>
-      </label>`;
+        <input type="radio" name="opt" value="${letter}" ${sel?'checked':''}/>
+        <span><strong>${letter}.</strong> ${escapeHtml(opt)}</span></label>`;
     }).join('')}</div>`;
   }
   if(q.type === 'MSQ'){
@@ -793,8 +832,7 @@ function renderAnswerInput(q, currentVal){
       const checked = sel.includes(letter);
       return `<label class="option ${checked?'selected':''}">
         <input type="checkbox" name="opt" value="${letter}" ${checked?'checked':''}/>
-        <span><strong>${letter}.</strong> ${escapeHtml(opt)}</span>
-      </label>`;
+        <span><strong>${letter}.</strong> ${escapeHtml(opt)}</span></label>`;
     }).join('')}</div>`;
   }
   if(q.type === 'NAT'){
@@ -806,52 +844,68 @@ function renderAnswerInput(q, currentVal){
 function bindAnswerInput(q, attempt){
   if(!q) return;
   if(q.type === 'MCQ'){
-    $$('input[name="opt"]').forEach(r => r.onchange = e => {
+    $$('input[name="opt"]').forEach(r => r.onchange = async e => {
+      attempt.responses = attempt.responses || {};
       attempt.responses[q.id] = e.target.value;
-      DB.saveAttempt(attempt);
       $$('.option').forEach(o => o.classList.remove('selected'));
       e.target.closest('.option').classList.add('selected');
+      await API.call('saveResponse', { attemptId: attempt.id, questionId: q.id, response: e.target.value });
+      updatePalette();
     });
   }
   if(q.type === 'MSQ'){
-    $$('input[name="opt"]').forEach(r => r.onchange = () => {
+    $$('input[name="opt"]').forEach(r => r.onchange = async () => {
       const sel = $$('input[name="opt"]:checked').map(x=>x.value).sort().join(',');
-      attempt.responses[q.id] = sel || undefined;
-      if(!sel) delete attempt.responses[q.id];
-      DB.saveAttempt(attempt);
-      $$('.option').forEach(o => {
-        const cb = o.querySelector('input');
-        o.classList.toggle('selected', cb.checked);
-      });
+      attempt.responses = attempt.responses || {};
+      if(!sel) delete attempt.responses[q.id]; else attempt.responses[q.id] = sel;
+      $$('.option').forEach(o => o.classList.toggle('selected', o.querySelector('input').checked));
+      await API.call('saveResponse', { attemptId: attempt.id, questionId: q.id, response: sel });
+      updatePalette();
     });
   }
   if(q.type === 'NAT'){
     const inp = $('#natInput');
     if(inp){
+      let saveTimeout;
       inp.oninput = () => {
-        if(inp.value === '') delete attempt.responses[q.id];
-        else attempt.responses[q.id] = inp.value;
-        DB.saveAttempt(attempt);
+        attempt.responses = attempt.responses || {};
+        if(inp.value === '') delete attempt.responses[q.id]; else attempt.responses[q.id] = inp.value;
+        updatePalette();
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          API.call('saveResponse', { attemptId: attempt.id, questionId: q.id, response: inp.value });
+        }, 400);
       };
     }
   }
 }
-
-function saveCurrentResponse(){
-  // Responses are already saved on input change; this is a no-op placeholder
-  // for explicit "Save & Next" semantics.
-  DB.saveAttempt(examState.attempt);
+function updatePalette(){
+  if(!examState) return;
+  const { attempt, questions, current } = examState;
+  $$('.palette-btn').forEach((b,i) => {
+    const qq = questions[i];
+    const ans = attempt.responses?.[qq.id];
+    const marked = attempt.review?.[qq.id];
+    const has = ans !== undefined && ans !== '' && ans !== null;
+    let cls = 'not-visited';
+    if(marked && has) cls = 'answered-marked';
+    else if(marked) cls = 'marked';
+    else if(has) cls = 'answered';
+    b.className = 'palette-btn ' + cls + (i===current?' active':'');
+  });
 }
+
+async function saveCurrentResponse(){ /* auto-saved on input */ }
 
 function confirmSubmit(){
   const { attempt, questions } = examState;
-  let answered=0, unanswered=0, marked=0, notVisited=0;
+  let answered=0, unanswered=0, marked=0;
   questions.forEach(q => {
-    const r = attempt.responses[q.id];
-    const m = attempt.review[q.id];
+    const r = attempt.responses?.[q.id];
+    const m = attempt.review?.[q.id];
     const has = r !== undefined && r !== '' && r !== null;
     if(m) marked++;
-    if(has) answered++; else { unanswered++; if(!m) notVisited++; }
+    if(has) answered++; else unanswered++;
   });
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -859,11 +913,10 @@ function confirmSubmit(){
     <div class="modal">
       <h3>Submit Test?</h3>
       <p>Please review your answers before submitting. This action cannot be undone.</p>
-      <div class="summary-list">
+      <div style="margin:16px 0">
         <div class="summary-item"><span>Answered</span><strong style="color:var(--success)">${answered}</strong></div>
         <div class="summary-item"><span>Not Answered</span><strong style="color:var(--danger)">${unanswered}</strong></div>
         <div class="summary-item"><span>Marked for Review</span><strong style="color:var(--warn)">${marked}</strong></div>
-        <div class="summary-item"><span>Not Visited</span><strong>${notVisited}</strong></div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" id="cancelSubmit">Cancel</button>
@@ -872,180 +925,134 @@ function confirmSubmit(){
     </div>`;
   document.body.appendChild(overlay);
   $('#cancelSubmit').onclick = () => overlay.remove();
-  $('#confirmSubmit').onclick = () => { overlay.remove(); submitExam(false); };
+  $('#confirmSubmit').onclick = async () => { overlay.remove(); await submitExam(false); };
 }
 
-function submitExam(auto){
+async function submitExam(auto){
   clearInterval(examTimer);
-  const { attempt } = examState;
-  DB.scoreAttempt(attempt.id); // server-side scoring
+  try{
+    await API.call('submitAttempt', { attemptId: examState.attempt.id });
+    toast(auto ? 'Time up — test submitted' : 'Test submitted successfully', 'success');
+  }catch(err){ toast('Submit failed: '+err.message, 'error'); }
   examState = null;
-  toast(auto ? 'Time up — test submitted' : 'Test submitted successfully', 'success');
   Router.go('#/student');
-}
-
-function showReview(attemptId){
-  const attempt = DB.getAttempt(attemptId);
-  if(!attempt) return;
-  const user = Auth.current();
-  if(attempt.studentId !== user.id){ toast('Access denied','error'); return; }
-  const test = DB.getTest(attempt.testId);
-  if(!test) return;
-
-  const app = $('#app');
-  app.innerHTML = `
-    <div class="topbar">
-      <div class="brand"><div class="brand-icon">S</div><h1>Result: ${escapeHtml(test.title)}</h1></div>
-      <button class="btn-logout" id="backBtn">← Back</button>
-    </div>
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-card success"><div class="label">Score</div><div class="value">${attempt.score} / ${test.totalMarks||0}</div></div>
-        <div class="stat-card"><div class="label">Correct</div><div class="value">${attempt.correct}</div></div>
-        <div class="stat-card danger"><div class="label">Wrong</div><div class="value">${attempt.wrong}</div></div>
-        <div class="stat-card warn"><div class="label">Skipped</div><div class="value">${attempt.skipped}</div></div>
-      </div>
-      <div class="section">
-        <h3 style="margin-bottom:16px">Question-wise Review</h3>
-        ${(test.questions||[]).map((q,i) => {
-          const resp = attempt.responses[q.id];
-          const isCorrect = DB._compareAnswer(q, resp);
-          const skipped = resp === undefined || resp === null || resp === '';
-          let statusColor = 'var(--muted)', statusText = 'Skipped';
-          if(!skipped){ statusColor = isCorrect ? 'var(--success)' : 'var(--danger)'; statusText = isCorrect ? 'Correct' : 'Wrong'; }
-          return `<div style="padding:14px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;border-left:4px solid ${statusColor}">
-            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
-              <strong>Q${i+1}. <span class="type-badge" style="background:var(--bg);padding:2px 8px;border-radius:4px;font-size:11px">${q.type}</span></strong>
-              <span style="color:${statusColor};font-weight:600">${statusText}</span>
-            </div>
-            <div style="margin:8px 0;white-space:pre-wrap">${escapeHtml(q.text||'')}</div>
-            <div style="font-size:13px;color:var(--muted)">Your answer: <strong style="color:var(--text)">${escapeHtml(resp||'—')}</strong></div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
-  $('#backBtn').onclick = () => Router.go('#/student');
 }
 
 /* =========================================================================
    Moderator Views
    ========================================================================= */
-let modTab = 'tests';
+let modTab = 'tests', editingTestId = null, editingTest = null;
+let currentPdf = null, currentPageNum = 1;
 
-function viewModeratorDash(){
+async function viewModeratorDash(){
   const user = Auth.requireRole('moderator');
-  const app = $('#app');
-  const tests = DB.getTests();
-
-  app.innerHTML = `
-    <div class="topbar">
-      <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST — Moderator</h1></div>
-      <div class="user-info">
-        <span>${escapeHtml(user.name)}</span>
-        <span class="role-badge">Moderator</span>
-        <button class="btn-logout" id="logout">Sign Out</button>
-      </div>
-    </div>
+  $('#app').innerHTML = `<div class="topbar">
+    <div class="brand"><div class="brand-icon">S</div><h1>SFI CUSAT MOCK TEST — Moderator</h1></div>
+    <div class="user-info"><span>${escapeHtml(user.name)}</span><span class="role-badge">Moderator</span>
+      <button class="btn-logout" id="logout">Sign Out</button></div></div>
     <div class="container">
       <div class="tabs">
         <div class="tab ${modTab==='tests'?'active':''}" data-tab="tests">Tests</div>
-        <div class="tab ${modTab==='create'?'active':''}" data-tab="create">Create Test</div>
+        <div class="tab ${modTab==='create'?'active':''}" data-tab="create">Create / Edit</div>
         <div class="tab ${modTab==='results'?'active':''}" data-tab="results">Results</div>
         <div class="tab ${modTab==='students'?'active':''}" data-tab="students">Students</div>
       </div>
-      <div id="tabContent"></div>
+      <div id="tabContent"><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner" style="border-color:var(--border);border-top-color:var(--primary)"></span> Loading…</div></div>
     </div>`;
   $('#logout').onclick = () => { Auth.logout(); Router.go('#/'); };
   $$('.tab').forEach(t => t.onclick = () => { modTab = t.dataset.tab; viewModeratorDash(); });
-  renderModTab(tests);
+  try{
+    if(modTab === 'tests'){
+      const data = await API.call('modListTests');
+      renderModTests(data.tests);
+    } else if(modTab === 'create'){
+      await renderModCreate();
+    } else if(modTab === 'results'){
+      const data = await API.call('modAllResults');
+      renderModResults(data.results);
+    } else if(modTab === 'students'){
+      const data = await API.call('modStudents');
+      renderModStudents(data.students);
+    }
+  }catch(err){ toast(err.message, 'error'); }
 }
 
-function renderModTab(tests){
+function renderModTests(tests){
   const c = $('#tabContent');
-  if(modTab === 'tests') renderModTests(c, tests);
-  else if(modTab === 'create') renderModCreate(c);
-  else if(modTab === 'results') renderModResults(c);
-  else if(modTab === 'students') renderModStudents(c);
-}
-
-function renderModTests(c, tests){
-  if(!tests.length){
-    c.innerHTML = `<div class="section"><div class="empty-state"><div class="icon">📋</div><p>No tests yet. Click "Create Test" to make your first one.</p></div></div>`;
+  if(!tests?.length){
+    c.innerHTML = `<div class="section"><div class="empty-state"><div class="icon">📋</div><p>No tests yet. Click "Create / Edit" to make your first one.</p></div></div>`;
     return;
   }
   c.innerHTML = `<div class="section">
     <div class="section-header"><h3>All Tests (${tests.length})</h3></div>
     <div class="table-wrap"><table>
       <thead><tr><th>Title</th><th>Questions</th><th>Duration</th><th>Marks</th><th>Status</th><th>Attempts</th><th></th></tr></thead>
-      <tbody>${tests.map(t => {
-        const att = DB.getTestAttempts(t.id).length;
-        return `<tr>
-          <td><strong>${escapeHtml(t.title)}</strong><br><small style="color:var(--muted)">${escapeHtml((t.description||'').slice(0,60))}</small></td>
-          <td>${t.questions?.length||0}</td>
-          <td>${t.duration} min</td>
-          <td>${t.totalMarks||0}</td>
-          <td><span class="status-badge status-${t.status}">${t.status}</span></td>
-          <td>${att}</td>
-          <td>
-            <button class="btn btn-secondary" data-edit="${t.id}" style="padding:5px 10px;font-size:12px">Edit</button>
-            <button class="btn btn-secondary" data-toggle="${t.id}" style="padding:5px 10px;font-size:12px">${t.status==='published'?'Unpublish':'Publish'}</button>
-            <button class="btn btn-danger" data-del="${t.id}" style="padding:5px 10px;font-size:12px">Delete</button>
-          </td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>
-  </div>`;
-  $$('[data-edit]').forEach(b => b.onclick = () => { modTab='create'; editingTestId = b.dataset.edit; viewModeratorDash(); });
-  $$('[data-toggle]').forEach(b => b.onclick = () => {
-    const t = DB.getTest(b.dataset.toggle);
-    t.status = t.status === 'published' ? 'draft' : 'published';
-    DB.saveTest(t); toast('Test ' + t.status, 'success'); viewModeratorDash();
+      <tbody>${tests.map(t => `<tr>
+        <td><strong>${escapeHtml(t.title)}</strong><br><small style="color:var(--muted)">${escapeHtml((t.description||'').slice(0,60))}</small></td>
+        <td>${t.questionCount}</td><td>${t.duration} min</td><td>${t.totalMarks||0}</td>
+        <td><span class="status-badge status-${t.status}">${t.status}</span></td>
+        <td>${t.attemptCount}</td>
+        <td>
+          <button class="btn btn-secondary" data-edit="${t.id}" style="padding:5px 10px;font-size:12px">Edit</button>
+          <button class="btn btn-secondary" data-toggle="${t.id}" data-status="${t.status}" style="padding:5px 10px;font-size:12px">${t.status==='published'?'Unpublish':'Publish'}</button>
+          <button class="btn btn-danger" data-del="${t.id}" style="padding:5px 10px;font-size:12px">Delete</button>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table></div></div>`;
+  $$('[data-edit]').forEach(b => b.onclick = () => { modTab='create'; editingTestId = b.dataset.edit; editingTest = null; viewModeratorDash(); });
+  $$('[data-toggle]').forEach(async b => {
+    b.onclick = async () => {
+      const publish = b.dataset.status !== 'published';
+      await API.call('modPublishTest', { testId: b.dataset.toggle, publish });
+      toast('Test ' + (publish?'published':'unpublished'), 'success');
+      viewModeratorDash();
+    };
   });
-  $$('[data-del]').forEach(b => b.onclick = () => {
-    if(confirm('Delete this test? This cannot be undone.')){
-      DB.deleteTest(b.dataset.del); toast('Test deleted','success'); viewModeratorDash();
-    }
+  $$('[data-del]').forEach(b => b.onclick = async () => {
+    if(!confirm('Delete this test? This cannot be undone.')) return;
+    await API.call('modDeleteTest', { testId: b.dataset.del });
+    toast('Test deleted','success'); viewModeratorDash();
   });
 }
 
-let editingTestId = null;
-let currentPdf = null;
-let currentPageNum = 1;
-let cropRect = null;
-let cropStart = null;
-let isDragging = false;
-
-function renderModCreate(c){
-  const test = editingTestId ? DB.getTest(editingTestId) : {
-    id: uid(), title:'', description:'', duration:60, totalMarks:0,
-    attemptLimit:1, status:'draft', questions:[], createdAt: Date.now()
-  };
-  if(!editingTestId) editingTestId = test.id;
-
+async function renderModCreate(){
+  const c = $('#tabContent');
+  if(editingTestId && !editingTest){
+    const [testsRes, qRes] = await Promise.all([
+      API.call('modListTests'),
+      API.call('modListQuestions', { testId: editingTestId })
+    ]);
+    editingTest = testsRes.tests.find(t => t.id === editingTestId);
+    editingTest.questions = qRes.questions;
+  }
+  if(!editingTest){
+    editingTest = { id:'t_'+uid(), title:'', description:'', duration:60, totalMarks:0,
+      attemptLimit:1, status:'draft', questions:[], createdAt:Date.now() };
+    editingTestId = editingTest.id;
+  }
+  const t = editingTest;
   c.innerHTML = `
     <div class="section">
-      <h3 style="margin-bottom:16px">${editingTestId && DB.getTest(editingTestId)?.title ? 'Edit Test' : 'Create New Test'}</h3>
+      <h3 style="margin-bottom:16px">${t.title ? 'Edit Test' : 'Create New Test'}</h3>
       <form id="testMetaForm">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
-          <div class="form-group"><label>Test Title</label><input name="title" value="${escapeHtml(test.title)}" required/></div>
-          <div class="form-group"><label>Duration (minutes)</label><input type="number" name="duration" min="1" value="${test.duration}" required/></div>
-          <div class="form-group"><label>Attempt Limit</label><input type="number" name="attemptLimit" min="1" value="${test.attemptLimit||1}" required/></div>
+          <div class="form-group"><label>Test Title</label><input name="title" value="${escapeHtml(t.title)}" required/></div>
+          <div class="form-group"><label>Duration (minutes)</label><input type="number" name="duration" min="1" value="${t.duration}" required/></div>
+          <div class="form-group"><label>Attempt Limit</label><input type="number" name="attemptLimit" min="1" value="${t.attemptLimit||1}" required/></div>
         </div>
-        <div class="form-group"><label>Description</label><textarea name="description" rows="2">${escapeHtml(test.description||'')}</textarea></div>
-        <button type="submit" class="btn btn-primary">Save Metadata</button>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="2">${escapeHtml(t.description||'')}</textarea></div>
+        <button type="submit" class="btn btn-primary" id="saveMetaBtn">Save Metadata</button>
       </form>
     </div>
-
     <div class="section">
       <div class="section-header">
-        <h3>Questions (${(test.questions||[]).length})</h3>
+        <h3>Questions (${(t.questions||[]).length}) · Total: ${t.totalMarks||0} marks</h3>
         <div style="display:flex;gap:8px">
           <button class="btn btn-secondary" id="addManualQ">+ Add Manually</button>
-          <button class="btn btn-primary" id="publishBtn">${test.status==='published'?'Update Published':'Publish Test'}</button>
+          <button class="btn btn-primary" id="publishBtn">${t.status==='published'?'Update Published':'Publish Test'}</button>
         </div>
       </div>
-
-      <div id="pdfSection" style="margin-bottom:20px">
+      <div style="margin-bottom:20px">
         <h4 style="margin-bottom:10px">Upload PDF & Crop Questions</h4>
         <div class="crop-controls">
           <input type="file" id="pdfFile" accept="application/pdf"/>
@@ -1062,47 +1069,48 @@ function renderModCreate(c){
           <canvas id="pdfCanvas"></canvas>
           <div id="cropBox" class="crop-box" style="display:none"></div>
         </div>
-        <p style="font-size:12px;color:var(--muted);margin-top:6px">Click and drag on the PDF to select a question region. Fill in the answer below the form after cropping.</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:6px">Drag on the PDF to crop a question. Then edit its text/options/answer below.</p>
       </div>
-
       <div id="questionsList">
-        ${(test.questions||[]).map((q,i) => renderQuestionEditor(q,i)).join('') || '<div class="empty-state"><p>No questions yet. Add manually or crop from PDF.</p></div>'}
+        ${(t.questions||[]).map((q,i) => renderQuestionEditor(q,i)).join('') || '<div class="empty-state"><p>No questions yet.</p></div>'}
       </div>
     </div>`;
 
-  // Metadata form
-  $('#testMetaForm').onsubmit = e => {
+  $('#testMetaForm').onsubmit = async e => {
     e.preventDefault();
+    const btn = $('#saveMetaBtn'); const done = withSpinner(btn, 'Saving…');
     const fd = new FormData(e.target);
-    test.title = fd.get('title');
-    test.description = fd.get('description');
-    test.duration = +fd.get('duration');
-    test.attemptLimit = +fd.get('attemptLimit');
-    test.totalMarks = (test.questions||[]).reduce((s,q)=>s+(q.marks||0),0);
-    DB.saveTest(test);
-    toast('Test metadata saved','success');
-    renderModCreate(c);
+    try{
+      t.title = fd.get('title'); t.description = fd.get('description');
+      t.duration = +fd.get('duration'); t.attemptLimit = +fd.get('attemptLimit');
+      await API.call('modSaveTest', { test: t });
+      toast('Saved','success');
+    }catch(err){ toast(err.message,'error'); }
+    finally { done(); }
   };
 
-  $('#publishBtn').onclick = () => {
-    if(!(test.questions||[]).length){ toast('Add at least one question','error'); return; }
-    if(!test.title){ toast('Enter a test title','error'); return; }
-    test.status = 'published';
-    test.totalMarks = test.questions.reduce((s,q)=>s+(q.marks||0),0);
-    DB.saveTest(test);
-    toast('Test published','success');
-    modTab = 'tests'; viewModeratorDash();
+  $('#publishBtn').onclick = async () => {
+    if(!(t.questions||[]).length){ toast('Add at least one question','error'); return; }
+    if(!t.title){ toast('Enter a test title','error'); return; }
+    const btn = $('#publishBtn'); const done = withSpinner(btn, 'Publishing…');
+    try{
+      await API.call('modSaveTest', { test: t });
+      await API.call('modPublishTest', { testId: t.id, publish: true });
+      t.status = 'published';
+      toast('Test published','success');
+      modTab = 'tests'; editingTestId = null; editingTest = null;
+      viewModeratorDash();
+    }catch(err){ toast(err.message,'error'); }
+    finally { done(); }
   };
 
-  $('#addManualQ').onclick = () => {
-    test.questions = test.questions || [];
-    test.questions.push({
-      id: uid(), type:'MCQ', text:'', options:['','','',''],
-      answer:'', marks:1, negativeMarks:0, order: test.questions.length+1
-    });
-    test.totalMarks = test.questions.reduce((s,q)=>s+(q.marks||0),0);
-    DB.saveTest(test);
-    renderModCreate(c);
+  $('#addManualQ').onclick = async () => {
+    const type = 'MCQ';
+    const q = { id:'q_'+uid(), testId:t.id, order:(t.questions?.length||0)+1,
+      type, text:'', options:['','','',''], answer:'', marks:1, negativeMarks:0 };
+    await API.call('modSaveQuestion', { question: q });
+    t.questions = t.questions || []; t.questions.push(q);
+    renderModCreate();
   };
 
   // PDF handling
@@ -1110,22 +1118,21 @@ function renderModCreate(c){
     const file = e.target.files[0]; if(!file) return;
     const buf = await file.arrayBuffer();
     currentPdf = await pdfjsLib.getDocument({data:buf}).promise;
-    currentPageNum = 1;
-    renderPdfPage();
+    currentPageNum = 1; renderPdfPage();
   };
   $('#prevPage').onclick = () => { if(currentPageNum>1){ currentPageNum--; renderPdfPage(); } };
   $('#nextPage').onclick = () => { if(currentPdf && currentPageNum<currentPdf.numPages){ currentPageNum++; renderPdfPage(); } };
 
-  // Crop box drag
+  // Crop
   const viewer = $('#pdfViewer');
   const box = $('#cropBox');
+  let cropStart = null, isDragging = false;
   viewer.addEventListener('mousedown', e => {
     if(e.target !== $('#pdfCanvas')) return;
     const rect = viewer.getBoundingClientRect();
     cropStart = { x: e.clientX - rect.left + viewer.scrollLeft, y: e.clientY - rect.top + viewer.scrollTop };
     box.style.display = 'block';
-    box.style.left = cropStart.x + 'px';
-    box.style.top = cropStart.y + 'px';
+    box.style.left = cropStart.x + 'px'; box.style.top = cropStart.y + 'px';
     box.style.width = '0px'; box.style.height = '0px';
     isDragging = true;
   });
@@ -1144,35 +1151,28 @@ function renderModCreate(c){
     isDragging = false;
     const w = parseInt(box.style.width), h = parseInt(box.style.height);
     if(w < 20 || h < 20){ box.style.display='none'; return; }
-    // Crop the canvas region
     const canvas = $('#pdfCanvas');
     const cropCanvas = document.createElement('canvas');
     cropCanvas.width = w; cropCanvas.height = h;
-    const ctx = cropCanvas.getContext('2d');
-    ctx.drawImage(canvas, parseInt(box.style.left), parseInt(box.style.top), w, h, 0, 0, w, h);
+    cropCanvas.getContext('2d').drawImage(canvas, parseInt(box.style.left), parseInt(box.style.top), w, h, 0, 0, w, h);
     const imageData = cropCanvas.toDataURL('image/png');
-
     const type = $('#qType').value;
     const marks = +$('#qMarks').value || 1;
     const neg = +$('#qNeg').value || 0;
-    const opts = type === 'NAT' ? [] : ['','','',''];
-
-    test.questions = test.questions || [];
-    const newQ = {
-      id: uid(), type, text:'', image: imageData,
-      options: opts, answer:'', marks, negativeMarks: neg,
-      order: test.questions.length+1, page: currentPageNum
+    const q = {
+      id:'q_'+uid(), testId:t.id, order:(t.questions?.length||0)+1,
+      type, text:'', image:imageData,
+      options: type === 'NAT' ? [] : ['','','',''],
+      answer:'', marks, negativeMarks:neg, page:currentPageNum
     };
-    test.questions.push(newQ);
-    test.totalMarks = test.questions.reduce((s,q)=>s+(q.marks||0),0);
-    DB.saveTest(test);
+    await API.call('modSaveQuestion', { question: q });
+    t.questions = t.questions || []; t.questions.push(q);
     box.style.display = 'none';
-    toast('Question added — edit details below','success');
-    renderModCreate(c);
+    toast('Question added','success');
+    renderModCreate();
   });
 
-  // Bind question editors
-  bindQuestionEditors(test);
+  bindQuestionEditors(t);
 }
 
 function renderQuestionEditor(q, i){
@@ -1182,7 +1182,6 @@ function renderQuestionEditor(q, i){
       <strong style="min-width:20px">${String.fromCharCode(65+j)}.</strong>
       <input type="text" data-opt="${j}" value="${escapeHtml(opt)}" placeholder="Option ${String.fromCharCode(65+j)}"/>
     </div>`).join('');
-
   return `<div class="question-editor" data-qid="${q.id}">
     <div class="qe-header">
       <span class="q-num">Q${i+1} · ${q.type} · +${q.marks}/−${q.negativeMarks}</span>
@@ -1199,49 +1198,58 @@ function renderQuestionEditor(q, i){
     </div>
     ${q.type !== 'NAT' ? `
       <label style="font-size:13px;font-weight:500;margin-bottom:6px;display:block">Options (tick correct)</label>
-      <div class="options-editor">${optInputs}</div>
-    ` : `
+      <div class="options-editor">${optInputs}</div>` : `
       <div class="answer-row">
         <label>Correct Answer (numeric):</label>
         <input type="number" step="any" data-answer value="${escapeHtml(q.answer||'')}" placeholder="e.g. 4.5"/>
-      </div>
-    `}
+      </div>`}
   </div>`;
 }
-
 function isCorrectOption(q, j){
   const letter = String.fromCharCode(65+j);
   if(q.type === 'MSQ') return (q.answer||'').split(',').map(x=>x.trim().toUpperCase()).includes(letter);
   return (q.answer||'').trim().toUpperCase() === letter;
 }
-
 function bindQuestionEditors(test){
-  $$('[data-up]').forEach(b => b.onclick = () => {
+  $$('[data-up]').forEach(b => b.onclick = async () => {
     const i = +b.dataset.up;
     [test.questions[i-1], test.questions[i]] = [test.questions[i], test.questions[i-1]];
-    DB.saveTest(test); renderModCreate($('#tabContent'));
+    test.questions.forEach((q,idx) => q.order = idx+1);
+    await API.call('modReorderQuestions', { testId: test.id, order: test.questions.map(q=>q.id) });
+    renderModCreate();
   });
-  $$('[data-down]').forEach(b => b.onclick = () => {
+  $$('[data-down]').forEach(b => b.onclick = async () => {
     const i = +b.dataset.down;
     if(i >= test.questions.length-1) return;
     [test.questions[i+1], test.questions[i]] = [test.questions[i], test.questions[i+1]];
-    DB.saveTest(test); renderModCreate($('#tabContent'));
+    test.questions.forEach((q,idx) => q.order = idx+1);
+    await API.call('modReorderQuestions', { testId: test.id, order: test.questions.map(q=>q.id) });
+    renderModCreate();
   });
-  $$('[data-delq]').forEach(b => b.onclick = () => {
+  $$('[data-delq]').forEach(b => b.onclick = async () => {
     if(!confirm('Delete this question?')) return;
+    const q = test.questions[+b.dataset.delq];
+    await API.call('modDeleteQuestion', { questionId: q.id });
     test.questions.splice(+b.dataset.delq, 1);
-    test.totalMarks = test.questions.reduce((s,q)=>s+(q.marks||0),0);
-    DB.saveTest(test); renderModCreate($('#tabContent'));
+    test.questions.forEach((x,idx) => x.order = idx+1);
+    renderModCreate();
   });
-
   $$('.question-editor').forEach(editor => {
     const qid = editor.dataset.qid;
     const q = test.questions.find(x => x.id === qid);
     if(!q) return;
-    editor.querySelector('[data-text]').oninput = e => { q.text = e.target.value; DB.saveTest(test); };
+    let saveTimeout;
+    const scheduleSave = () => {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(async () => {
+        try { await API.call('modSaveQuestion', { question: q }); }
+        catch(err){ toast('Save failed: '+err.message,'error'); }
+      }, 400);
+    };
+    editor.querySelector('[data-text]').oninput = e => { q.text = e.target.value; scheduleSave(); };
     if(q.type !== 'NAT'){
       editor.querySelectorAll('[data-opt]').forEach(inp => {
-        inp.oninput = e => { q.options[+inp.dataset.opt] = e.target.value; DB.saveTest(test); };
+        inp.oninput = e => { q.options[+inp.dataset.opt] = e.target.value; scheduleSave(); };
       });
       editor.querySelectorAll('[data-correct]').forEach(cb => {
         cb.onchange = () => {
@@ -1249,14 +1257,14 @@ function bindQuestionEditors(test){
             editor.querySelectorAll('[data-correct]').forEach(x => { if(x!==cb) x.checked=false; });
             q.answer = cb.checked ? String.fromCharCode(65 + +cb.dataset.correct) : '';
           } else {
-            const sel = [...editor.querySelectorAll('[data-correct]:checked')].map(x => String.fromCharCode(65 + +x.dataset.correct)).sort().join(',');
-            q.answer = sel;
+            q.answer = [...editor.querySelectorAll('[data-correct]:checked')]
+              .map(x => String.fromCharCode(65 + +x.dataset.correct)).sort().join(',');
           }
-          DB.saveTest(test);
+          scheduleSave();
         };
       });
     } else {
-      editor.querySelector('[data-answer]').oninput = e => { q.answer = e.target.value; DB.saveTest(test); };
+      editor.querySelector('[data-answer]').oninput = e => { q.answer = e.target.value; scheduleSave(); };
     }
   });
 }
@@ -1272,42 +1280,33 @@ async function renderPdfPage(){
   $('#pageCount').textContent = currentPdf.numPages;
 }
 
-function renderModResults(c){
-  const tests = DB.getTests();
-  const attempts = DB.getAttempts().filter(a => a.status==='submitted');
+function renderModResults(results){
+  const c = $('#tabContent');
   c.innerHTML = `
     <div class="section">
       <div class="section-header">
-        <h3>All Results (${attempts.length})</h3>
+        <h3>All Results (${(results||[]).length})</h3>
         <button class="btn btn-secondary" id="exportCsv">Export CSV</button>
       </div>
-      ${attempts.length ? `
+      ${results?.length ? `
         <div class="table-wrap"><table>
           <thead><tr><th>Student</th><th>Roll No</th><th>Test</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Submitted</th></tr></thead>
-          <tbody>${attempts.map(a => {
-            const u = DB.getUsers().find(x => x.id === a.studentId);
-            const t = DB.getTest(a.testId);
-            return `<tr>
-              <td>${escapeHtml(u?.name||'—')}</td>
-              <td>${escapeHtml(u?.rollNumber||'—')}</td>
-              <td>${escapeHtml(t?.title||'—')}</td>
-              <td><strong>${a.score}</strong> / ${t?.totalMarks||0}</td>
-              <td style="color:var(--success)">${a.correct}</td>
-              <td style="color:var(--danger)">${a.wrong}</td>
-              <td>${a.skipped}</td>
-              <td>${fmtDate(a.submittedAt)}</td>
-            </tr>`;
-          }).join('')}</tbody>
+          <tbody>${results.map(a => `<tr>
+            <td>${escapeHtml(a.studentName)}</td>
+            <td>${escapeHtml(a.rollNumber)}</td>
+            <td>${escapeHtml(a.testTitle)}</td>
+            <td><strong>${a.score}</strong> / ${a.totalMarks}</td>
+            <td style="color:var(--success)">${a.correct}</td>
+            <td style="color:var(--danger)">${a.wrong}</td>
+            <td>${a.skipped}</td>
+            <td>${fmtDate(a.submittedAt)}</td>
+          </tr>`).join('')}</tbody>
         </table></div>`
         : `<div class="empty-state"><p>No submissions yet.</p></div>`}
     </div>`;
   $('#exportCsv').onclick = () => {
     const rows = [['Name','Roll','Test','Score','Correct','Wrong','Skipped','Submitted']];
-    attempts.forEach(a => {
-      const u = DB.getUsers().find(x => x.id === a.studentId);
-      const t = DB.getTest(a.testId);
-      rows.push([u?.name||'', u?.rollNumber||'', t?.title||'', a.score, a.correct, a.wrong, a.skipped, new Date(a.submittedAt).toISOString()]);
-    });
+    results.forEach(a => rows.push([a.studentName,a.rollNumber,a.testTitle,a.score,a.correct,a.wrong,a.skipped,new Date(a.submittedAt).toISOString()]));
     const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], {type:'text/csv'});
     const url = URL.createObjectURL(blob);
@@ -1315,31 +1314,31 @@ function renderModResults(c){
   };
 }
 
-function renderModStudents(c){
-  const students = DB.getUsers().filter(u => u.role === 'student');
+function renderModStudents(students){
+  const c = $('#tabContent');
   c.innerHTML = `
     <div class="section">
-      <h3 style="margin-bottom:16px">Registered Students (${students.length})</h3>
-      ${students.length ? `
+      <h3 style="margin-bottom:16px">Registered Students (${(students||[]).length})</h3>
+      ${students?.length ? `
         <div class="table-wrap"><table>
           <thead><tr><th>Name</th><th>Roll No</th><th>Email</th><th>Attempts</th><th>Joined</th></tr></thead>
-          <tbody>${students.map(s => {
-            const att = DB.getStudentAttempts(s.id).length;
-            return `<tr>
-              <td>${escapeHtml(s.name)}</td>
-              <td>${escapeHtml(s.rollNumber||'—')}</td>
-              <td>${escapeHtml(s.email)}</td>
-              <td>${att}</td>
-              <td>${fmtDate(s.createdAt)}</td>
-            </tr>`;
-          }).join('')}</tbody>
+          <tbody>${students.map(s => `<tr>
+            <td>${escapeHtml(s.name)}</td>
+            <td>${escapeHtml(s.rollNumber||'—')}</td>
+            <td>${escapeHtml(s.email)}</td>
+            <td>${s.attemptCount}</td>
+            <td>${fmtDate(s.createdAt)}</td>
+          </tr>`).join('')}</tbody>
         </table></div>`
         : `<div class="empty-state"><p>No students registered yet.</p></div>`}
     </div>`;
 }
 
 /* ---------- Routes ---------- */
-Router.register('/', viewLanding);
+Router.register('/', () => {
+  const s = Auth.current();
+  if(s) Router.go('#/' + s.role); else viewLanding();
+});
 Router.register('/student/login', () => viewLogin('student'));
 Router.register('/moderator/login', () => viewLogin('moderator'));
 Router.register('/student/register', viewRegister);
@@ -1354,13 +1353,7 @@ Router.register('/moderator', () => {
   viewModeratorDash();
 });
 
-/* Auto-redirect if already logged in */
-const sess = Auth.current();
-if(sess && location.hash === '#/'){
-  Router.go('#/' + sess.role);
-} else {
-  Router.start();
-}
+Router.start();
 </script>
 </body>
 </html>
