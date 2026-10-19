@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SFI National Level Examination Simulation — CBT Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.0/index.css" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          blood: {
+            950: '#1a0000',
+            900: '#2a0000',
+            800: '#4a0000',
+            700: '#6a0000',
+            600: '#880808',
+            500: '#a50a0a',
+            400: '#cc0000',
+            300: '#ef4444',
+            200: '#fca5a5',
+            100: '#fee2e2',
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .focus-ring:focus-visible { outline: 3px solid #fbbf24; outline-offset: 2px; border-radius: 6px; }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .pulse-red { animation: pulseRed 1.5s ease-in-out infinite; }
+  @keyframes pulseRed { 0%, 100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.7); } 50% { box-shadow: 0 0 0 8px rgba(204, 0, 0, 0); } }
+  .timer-warn { animation: timerWarn 1s ease-in-out infinite; }
+  @keyframes timerWarn { 0%, 100% { color: #fbbf24; } 50% { color: #ef4444; } }
+  [data-page] { display: none; }
+  [data-page].active { display: flex; }
+  .option-btn { transition: all 0.15s ease; }
+  .option-btn:hover { transform: translateX(2px); }
+  .palette-btn { transition: all 0.15s ease; }
+  .palette-btn:hover { transform: scale(1.08); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #1a0000; }
+  ::-webkit-scrollbar-thumb { background: #6a0000; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #880808; }
+  input, select { color: white; }
+  input::placeholder { color: #9ca3af; }
+</style>
+</head>
+<body class="bg-black text-white min-h-screen">
+
+<!-- ============ PAGE: REGISTRATION ============ -->
+<div data-page="register" class="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-blood-900 to-gray-900">
+  <!-- Dual Brand Header -->
+  <header class="w-full bg-blood-600 border-b-2 border-blood-400 text-white shadow-lg">
+    <div class="max-w-[1600px] mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="h-12 w-12 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow">
+          <svg viewBox="0 0 40 40" class="w-full h-full">
+            <circle cx="20" cy="20" r="18" fill="#880808"/>
+            <text x="20" y="26" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="serif">A</text>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-widest text-red-200 font-semibold">Powered by Abhimanyu Learning Space</p>
+          <h1 class="text-base md:text-lg font-extrabold tracking-wide">NATIONAL LEVEL EXAMINATION SIMULATION</h1>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3 ml-auto sm:ml-0">
+        <div class="text-right hidden sm:block">
+          <div class="text-sm font-black tracking-wider uppercase text-white">Student Federation of India</div>
+          <div class="text-[11px] text-red-200">National Level Examination Simulation</div>
+        </div>
+        <div class="h-12 w-12 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow">
+          <svg viewBox="0 0 40 40" class="w-full h-full">
+            <rect width="40" height="40" fill="#cc0000"/>
+            <text x="20" y="26" text-anchor="middle" fill="white" font-size="14" font-weight="900" font-family="sans-serif">SFI</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Demo banner -->
+  <div class="bg-yellow-500 border-b-2 border-yellow-600 text-black text-xs sm:text-sm py-1.5 px-4 text-center font-bold">
+    ⚠️ DEMO BUILD — Local state only. No database connected. Try test code: <code class="bg-black text-yellow-400 px-2 py-0.5 rounded font-mono">SFI2026UG</code>
+  </div>
+
+  <main class="flex-1 flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-gray-900/90 border-2 border-blood-600 rounded-xl shadow-2xl overflow-hidden fade-in">
+      <div class="bg-blood-600 px-6 py-4 border-b border-blood-400">
+        <h2 class="text-xl font-bold tracking-wide uppercase">Candidate Examination Portal</h2>
+        <p class="text-xs text-red-200 mt-0.5">Enter your registration credentials and assigned Test Code to begin the CBT simulation.</p>
+      </div>
+
+      <form id="registerForm" class="p-6 space-y-4">
+        <div id="regError" class="hidden bg-blood-800 border border-blood-400 text-red-100 px-4 py-3 rounded text-sm"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-red-200 mb-1">Full Name *</label>
+            <input type="text" name="name" required class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-blood-400" placeholder="As per official records" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-red-200 mb-1">Gender *</label>
+            <select name="gender" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-blood-400">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-red-200 mb-1">Email Address *</label>
+            <input type="email" name="email" required class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-blood-400" placeholder="student@example.com" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-red-200 mb-1">Phone Number *</label>
+            <input type="tel" name="phone" required pattern="[0-9]{10}" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-blood-400" placeholder="10-digit mobile number" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-red-200 mb-1">Course Preference *</label>
+            <input type="text" name="coursePreference" required value="B.Tech / Engineering" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-blood-400" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-red-200 mb-1">Official Test Code *</label>
+            <input type="text" name="testCode" required class="w-full bg-gray-800 border border-blood-400 rounded px-3 py-2 text-sm font-mono uppercase focus:outline-none" placeholder="e.g. SFI2026UG" />
+          </div>
+        </div>
+
+        <button type="submit" class="w-full mt-4 bg-blood-600 hover:bg-blood-400 transition-colors text-white font-bold py-3 px-6 rounded shadow-lg uppercase tracking-wider text-sm focus-ring">
+          Proceed to Examination Hall
+        </button>
+
+        <div class="mt-4 pt-4 border-t border-gray-800 text-xs text-gray-400">
+          <p class="mb-2"><strong class="text-red-200">Demo test codes available:</strong></p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="prefillCode('SFI2026UG')" class="px-3 py-1 bg-gray-800 hover:bg-blood-800 border border-gray-700 rounded font-mono text-yellow-400">SFI2026UG</button>
+            <button type="button" onclick="prefillCode('SFI2026PG')" class="px-3 py-1 bg-gray-800 hover:bg-blood-800 border border-gray-700 rounded font-mono text-yellow-400">SFI2026PG</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="bg-blood-950 border-t border-blood-800 py-4 text-center text-xs text-red-200">
+    © 2026 Student Federation of India — Abhimanyu Learning Space CBT Platform
+  </footer>
+</div>
+
+<!-- ============ PAGE: EXAM ============ -->
+<div data-page="exam" class="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-blood-900 to-gray-900">
+  <header id="examHeader" class="w-full bg-blood-600 border-b-2 border-blood-400 text-white shadow-lg">
+    <div class="max-w-[1600px] mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="h-12 w-12 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow">
+          <svg viewBox="0 0 40 40" class="w-full h-full"><circle cx="20" cy="20" r="18" fill="#880808"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="serif">A</text></svg>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-widest text-red-200 font-semibold">Powered by Abhimanyu Learning Space</p>
+          <h1 id="examHeaderName" class="text-base md:text-lg font-extrabold tracking-wide">NATIONAL LEVEL EXAMINATION SIMULATION</h1>
+        </div>
+      </div>
+      <div id="candidateBadge" class="flex items-center space-x-3 bg-blood-800 px-4 py-1.5 rounded border border-blood-400"></div>
+      <div class="flex items-center space-x-3 ml-auto sm:ml-0">
+        <div class="text-right hidden sm:block">
+          <div class="text-sm font-black tracking-wider uppercase text-white">Student Federation of India</div>
+          <div class="text-[11px] text-red-200">National Level Examination Simulation</div>
+        </div>
+        <div class="h-12 w-12 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow">
+          <svg viewBox="0 0 40 40" class="w-full h-full"><rect width="40" height="40" fill="#cc0000"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="14" font-weight="900" font-family="sans-serif">SFI</text></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sub-bar -->
+  <div class="bg-blood-800 border-b border-blood-700 px-6 py-2 flex flex-wrap items-center justify-between text-xs">
+    <div class="flex items-center space-x-4">
+      <span class="font-semibold text-red-200">Test Code: <strong id="subTestCode" class="text-white font-mono"></strong></span>
+      <span class="bg-green-900/60 border border-green-500 px-2 py-0.5 rounded text-green-200">Correct: <strong id="subPositive">+4</strong></span>
+      <span class="bg-red-900/60 border border-red-500 px-2 py-0.5 rounded text-red-200">Negative: <strong id="subNegative">-1</strong></span>
+    </div>
+    <div class="flex items-center space-x-2 text-sm font-mono font-bold bg-black/50 px-4 py-1 rounded border border-blood-400">
+      <span class="text-red-300">Time Remaining:</span>
+      <span id="timerDisplay" class="text-yellow-400">00:00:00</span>
+    </div>
+  </div>
+
+  <!-- Main CBT Workspace -->
+  <div class="flex-1 max-w-[1600px] w-full mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
+    <!-- Left: Question Display -->
+    <div class="lg:col-span-3 flex flex-col bg-gray-900/95 border border-blood-700 rounded-lg shadow-xl overflow-hidden">
+      <div class="bg-blood-600/60 px-6 py-3 border-b border-blood-700 flex justify-between items-center">
+        <h2 class="font-bold text-base">Question No. <span id="qCurrentNum">1</span> of <span id="qTotal">0</span></h2>
+        <span class="text-xs bg-blood-800 px-2.5 py-1 rounded border border-blood-400">Single Choice Objective</span>
+      </div>
+
+      <div id="questionArea" class="p-6 flex-1 overflow-y-auto space-y-6"></div>
+
+      <!-- Bottom Action Bar -->
+      <div class="bg-gray-950 px-6 py-3.5 border-t border-blood-700 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2">
+          <button id="markReviewBtn" type="button" class="bg-purple-700 hover:bg-purple-600 text-white text-xs font-bold px-4 py-2.5 rounded uppercase focus-ring">Mark for Review & Next</button>
+          <button id="clearBtn" type="button" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold px-4 py-2.5 rounded uppercase focus-ring">Clear Response</button>
+        </div>
+        <div class="flex gap-2">
+          <button id="prevBtn" type="button" class="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-white text-xs font-bold px-4 py-2.5 rounded uppercase focus-ring">Previous</button>
+          <button id="saveNextBtn" type="button" class="bg-green-700 hover:bg-green-600 text-white text-xs font-bold px-6 py-2.5 rounded uppercase shadow focus-ring">Save & Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Palette -->
+    <div class="bg-gray-900/95 border border-blood-700 rounded-lg shadow-xl flex flex-col justify-between p-4">
+      <div>
+        <h3 class="text-sm font-bold uppercase tracking-wider bg-blood-800 px-3 py-2 rounded border border-blood-400 mb-3">Question Palette</h3>
+        <div class="grid grid-cols-2 gap-2 text-[11px] mb-4 pb-3 border-b border-gray-800">
+          <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded bg-green-600 inline-block" /><span>Answered</span></div>
+          <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded bg-purple-600 inline-block" /><span>Marked for Review</span></div>
+          <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded bg-blood-400 inline-block" /><span>Visited / Active</span></div>
+          <div class="flex items-center space-x-2"><span class="w-4 h-4 rounded bg-gray-600 inline-block" /><span>Not Visited</span></div>
+        </div>
+        <div id="paletteGrid" class="grid grid-cols-5 gap-2 max-h-[360px] overflow-y-auto p-1"></div>
+      </div>
+      <button id="submitExamBtn" type="button" class="w-full mt-6 bg-blood-600 hover:bg-blood-400 border border-red-400 text-white font-black py-3 rounded uppercase tracking-wider text-sm shadow-lg focus-ring">Submit Examination</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE: RESULT ============ -->
+<div data-page="result" class="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-blood-900 to-gray-900">
+  <header class="w-full bg-blood-600 border-b-2 border-blood-400 text-white shadow-lg">
+    <div class="max-w-[1600px] mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="h-12 w-12 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow">
+          <svg viewBox="0 0 40 40" class="w-full h-full"><circle cx="20" cy="20" r="18" fill="#880808"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="serif">A</text></svg>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-widest text-red-200 font-semibold">Powered by Abhimanyu Learning Space</p>
+          <h1 class="text-base md:text-lg font-extrabold tracking-wide">EXAMINATION RESULT & RANK CARD</h1>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3 ml-auto sm:ml-0">
+        <div class="text-right hidden sm:block">
+          <div class="text-sm font-black tracking-wider uppercase text-white">Student Federation of India</div>
+          <div class="text-[11px] text-red-200">National Level Examination Simulation</div>
+        </div>
+        <div class="h-12 w-12 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow">
+          <svg viewBox="0 0 40 40" class="w-full h-full"><rect width="40" height="40" fill="#cc0000"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="14" font-weight="900" font-family="sans-serif">SFI</text></svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="resultMain" class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-8"></main>
+
+  <footer class="bg-blood-950 border-t border-blood-800 py-4 text-center text-xs text-red-200">
+    © 2026 Student Federation of India — Abhimanyu Learning Space CBT Platform
+  </footer>
+</div>
+
+<script>
+/* =========================================================
+   SFI MOCK TEST PLATFORM — CLIENT-SIDE DEMO
+   ---------------------------------------------------------
+   This is a single-file demonstration of the CBT interface.
+   It simulates the Next.js + Prisma backend with localStorage.
+   Demo data is clearly labelled and isolated from production.
+   ========================================================= */
+
+// ---------- DEMO TEST DATA ----------
+const DEMO_TESTS = {
+  'SFI2026UG': {
+    testCode: 'SFI2026UG',
+    examName: 'SFI National Level UG Simulation 2026',
+    durationMinutes: 30, // Shortened for demo (production would be 180)
+    markingScheme: { positive: 4, negative: 1 },
+    isActive: 1,
+    questions: [
+      { id: 'q1', questionNumber: 1, text: 'Which article of the Indian Constitution guarantees the Right to Freedom of Speech and Expression?', optionA: 'Article 14', optionB: 'Article 19(1)(a)', optionC: 'Article 21', optionD: 'Article 32', correctAnswer: 'B', marks: 4 },
+      { id: 'q2', questionNumber: 2, text: 'The "Basic Structure Doctrine" was established by the Supreme Court in which landmark case?', optionA: 'Golaknath Case (1967)', optionB: 'Kesavananda Bharati Case (1973)', optionC: 'Maneka Gandhi Case (1978)', optionD: 'Minerva Mills Case (1980)', correctAnswer: 'B', marks: 4 },
+      { id: 'q3', questionNumber: 3, text: 'Who was the first Chairman of the Planning Commission of India?', optionA: 'Jawaharlal Nehru', optionB: 'Sardar Patel', optionC: 'Dr. Rajendra Prasad', optionD: 'Gulzarilal Nanda', correctAnswer: 'A', marks: 4 },
+      { id: 'q4', questionNumber: 4, text: 'The Panchayati Raj system was constitutionalised through which amendment?', optionA: '42nd Amendment', optionB: '44th Amendment', optionC: '73rd Amendment', optionD: '74th Amendment', correctAnswer: 'C', marks: 4 },
+      { id: 'q5', questionNumber: 5, text: 'Which schedule of the Indian Constitution contains provisions relating to the administration of tribal areas?', optionA: 'Fifth Schedule', optionB: 'Sixth Schedule', optionC: 'Seventh Schedule', optionD: 'Eighth Schedule', correctAnswer: 'B', marks: 4 },
+      { id: 'q6', questionNumber: 6, text: 'The concept of "Directive Principles of State Policy" was borrowed from which constitution?', optionA: 'USA', optionB: 'UK', optionC: 'Ireland', optionD: 'Canada', correctAnswer: 'C', marks: 4 },
+      { id: 'q7', questionNumber: 7, text: 'Who administers the oath of office to the President of India?', optionA: 'Prime Minister', optionB: 'Vice President', optionC: 'Chief Justice of India', optionD: 'Speaker of Lok Sabha', correctAnswer: 'C', marks: 4 },
+      { id: 'q8', questionNumber: 8, text: 'The "Joint Sitting" of both Houses of Parliament is presided over by:', optionA: 'President of India', optionB: 'Vice President', optionC: 'Speaker of Lok Sabha', optionD: 'Senior-most MP', correctAnswer: 'C', marks: 4 },
+      { id: 'q9', questionNumber: 9, text: 'Which writ is issued by the court to quash the order of a lower court or tribunal?', optionA: 'Habeas Corpus', optionB: 'Mandamus', optionC: 'Certiorari', optionD: 'Quo-Warranto', correctAnswer: 'C', marks: 4 },
+      { id: 'q10', questionNumber: 10, text: 'The National Emergency can be proclaimed by the President under:', optionA: 'Article 352', optionB: 'Article 356', optionC: 'Article 360', optionD: 'Article 368', correctAnswer: 'C', marks: 4 },
+    ]
+  },
+  'SFI2026PG': {
+    testCode: 'SFI2026PG',
+    examName: 'SFI National Level PG Simulation 2026',
+    durationMinutes: 20, // Shortened for demo
+    markingScheme: { positive: 4, negative: 1 },
+    isActive: 1,
+    questions: [
+      { id: 'p1', questionNumber: 1, text: 'The "Due Process" doctrine in India is read into Article 21 through which case?', optionA: 'A.K. Gopalan', optionB: 'Maneka Gandhi', optionC: 'ADM Jabalpur', optionD: 'Shah Bano', correctAnswer: 'B', marks: 4 },
+      { id: 'p2', questionNumber: 2, text: 'Which of the following is NOT a fundamental right?', optionA: 'Right to Equality', optionB: 'Right to Property', optionC: 'Right to Freedom', optionD: 'Right against Exploitation', correctAnswer: 'B', marks: 4 },
+      { id: 'p3', questionNumber: 3, text: 'The "Collegium System" for judicial appointments was established through:', optionA: 'Parliamentary Act', optionB: 'Constitutional Amendment', optionC: 'Supreme Court Judgments', optionD: 'Presidential Ordinance', correctAnswer: 'C', marks: 4 },
+      { id: 'p4', questionNumber: 4, text: 'Which article deals with the abolition of untouchability?', optionA: 'Article 14', optionB: 'Article 17', optionC: 'Article 19', optionD: 'Article 23', correctAnswer: 'B', marks: 4 },
+      { id: 'p5', questionNumber: 5, text: 'The "Doctrine of Severability" is related to:', optionA: 'Fundamental Rights', optionB: 'Judicial Review', optionC: 'Legislative Procedure', optionD: 'Amendment Process', correctAnswer: 'B', marks: 4 },
+    ]
+  }
+};
+
+// ---------- STATE ----------
+const state = {
+  student: null,
+  currentTest: null,
+  currentIndex: 0,
+  responses: {},
+  visited: {},
+  markedForReview: {},
+  secondsLeft: null,
+  initialDurationSeconds: 0,
+  timerInterval: null,
+  performanceId: null
+};
+
+// ---------- UTILITIES ----------
+function uid() { return 'id_' + Math.random().toString(36).slice(2, 11); }
+function showPage(name) {
+  document.querySelectorAll('[data-page]').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-page="${name}"]`).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function formatTime(secs) {
+  const hrs = Math.floor(secs / 3600);
+  const mins = Math.floor((secs % 3600) / 60);
+  const remSecs = secs % 60;
+  return `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(remSecs).padStart(2,'0')}`;
+}
+function prefillCode(code) {
+  document.querySelector('input[name="testCode"]').value = code;
+}
+
+// ---------- REGISTRATION ----------
+document.getElementById('registerForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = Object.fromEntries(fd.entries());
+  const errEl = document.getElementById('regError');
+
+  const test = DEMO_TESTS[data.testCode.toUpperCase()];
+  if (!test || test.isActive !== 1) {
+    errEl.textContent = 'Invalid or inactive Test Code. Please verify with your invigilator.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+
+  // Simulate registration (preserve existing student by email)
+  const stored = JSON.parse(localStorage.getItem('sfi_students') || '{}');
+  const emailKey = data.email.toLowerCase().trim();
+  let student = stored[emailKey];
+  if (!student) {
+    const year = new Date().getFullYear();
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+    student = {
+      id: uid(),
+      registrationId: `SFI-${year}-${randomSuffix}`,
+      name: data.name.trim(),
+      gender: data.gender,
+      email: emailKey,
+      phone: data.phone.trim(),
+      coursePreference: data.coursePreference,
+      testCode: data.testCode.toUpperCase(),
+      photoUrl: null
+    };
+    stored[emailKey] = student;
+    localStorage.setItem('sfi_students', JSON.stringify(stored));
+  } else {
+    student.testCode = data.testCode.toUpperCase();
+    student.coursePreference = data.coursePreference;
+    stored[emailKey] = student;
+    localStorage.setItem('sfi_students', JSON.stringify(stored));
+  }
+
+  state.student = student;
+  sessionStorage.setItem('sfi_student', JSON.stringify(student));
+  startExam(data.testCode.toUpperCase());
+});
+
+// ---------- EXAM ----------
+function startExam(testCode) {
+  const test = DEMO_TESTS[testCode];
+  if (!test) return;
+  state.currentTest = test;
+  state.currentIndex = 0;
+  state.responses = {};
+  state.visited = { 1: true };
+  state.markedForReview = {};
+  state.initialDurationSeconds = test.durationMinutes * 60;
+  state.secondsLeft = state.initialDurationSeconds;
+
+  // Populate header
+  document.getElementById('examHeaderName').textContent = test.examName;
+  document.getElementById('subTestCode').textContent = test.testCode;
+  document.getElementById('subPositive').textContent = '+' + test.markingScheme.positive;
+  document.getElementById('subNegative').textContent = '-' + test.markingScheme.negative;
+  document.getElementById('qTotal').textContent = test.questions.length;
+
+  // Candidate badge
+  document.getElementById('candidateBadge').innerHTML = `
+    <div class="h-10 w-10 rounded bg-blood-400 flex items-center justify-center font-bold text-sm border border-red-300">
+      ${esc(state.student.name.charAt(0).toUpperCase())}
+    </div>
+    <div class="text-xs">
+      <div class="font-bold text-white">${esc(state.student.name)}</div>
+      <div class="text-red-200 font-mono">ID: ${esc(state.student.registrationId)}</div>
+    </div>`;
+
+  showPage('exam');
+  renderQuestion();
+  renderPalette();
+  startTimer();
+}
+
+function renderQuestion() {
+  const q = state.currentTest.questions[state.currentIndex];
+  const qNum = q.questionNumber;
+  const selected = state.responses[qNum];
+
+  document.getElementById('qCurrentNum').textContent = qNum;
+
+  document.getElementById('questionArea').innerHTML = `
+    <p class="text-base md:text-lg leading-relaxed whitespace-pre-wrap">${esc(q.text)}</p>
+    <div class="space-y-3 pt-2">
+      ${['A', 'B', 'C', 'D'].map(optKey => {
+        const val = q['option' + optKey];
+        if (!val) return '';
+        const isSelected = selected === optKey;
+        return `
+          <label class="option-btn flex items-center space-x-3 p-3.5 rounded-lg border cursor-pointer ${
+            isSelected ? 'bg-blood-600/70 border-blood-400 shadow-md' : 'bg-gray-800/80 border-gray-700 hover:border-red-700'
+          }">
+            <input type="radio" name="q-${qNum}" ${isSelected ? 'checked' : ''} class="h-4 w-4 accent-blood-400" />
+            <span class="font-bold text-red-300">${optKey}.</span>
+            <span class="text-sm md:text-base">${esc(val)}</span>
+          </label>`;
+      }).join('')}
+    </div>`;
+
+  // Attach option handlers
+  document.querySelectorAll(`input[name="q-${qNum}"]`).forEach(radio => {
+    radio.parentElement.addEventListener('click', () => {
+      const key = radio.value || radio.parentElement.querySelector('input').getAttribute('name').split('-')[1];
+      // Extract option key from label
+      const optKey = radio.parentElement.querySelector('.font-bold').textContent.trim().replace('.', '');
+      state.responses[qNum] = optKey;
+      renderQuestion();
+      renderPalette();
+    });
+  });
+
+  // Update mark-for-review button text
+  const markBtn = document.getElementById('markReviewBtn');
+  markBtn.textContent = state.markedForReview[qNum] ? 'Unmark Review' : 'Mark for Review & Next';
+
+  // Prev button state
+  document.getElementById('prevBtn').disabled = state.currentIndex === 0;
+}
+
+function renderPalette() {
+  const grid = document.getElementById('paletteGrid');
+  grid.innerHTML = state.currentTest.questions.map((q, idx) => {
+    const qNum = q.questionNumber;
+    const isCurrent = idx === state.currentIndex;
+    const isAnswered = Boolean(state.responses[qNum]);
+    const isReview = Boolean(state.markedForReview[qNum]);
+    const isVisited = Boolean(state.visited[qNum]);
+
+    let colorClass = 'bg-gray-600 text-gray-200';
+    if (isReview) colorClass = 'bg-purple-600 text-white';
+    else if (isAnswered) colorClass = 'bg-green-600 text-white';
+    else if (isVisited || isCurrent) colorClass = 'bg-blood-400 text-white';
+
+    const ringClass = isCurrent ? 'ring-2 ring-white scale-105' : '';
+
+    return `<button type="button" onclick="navigateToQuestion(${idx})" class="palette-btn h-9 rounded font-bold text-xs ${colorClass} ${ringClass}">${qNum}</button>`;
+  }).join('');
+}
+
+function navigateToQuestion(idx) {
+  const qNum = state.currentTest.questions[idx].questionNumber;
+  state.visited[qNum] = true;
+  state.currentIndex = idx;
+  renderQuestion();
+  renderPalette();
+}
+
+function startTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  const display = document.getElementById('timerDisplay');
+  const update = () => {
+    if (state.secondsLeft === null) return;
+    display.textContent = formatTime(state.secondsLeft);
+    if (state.secondsLeft <= 300) {
+      display.classList.add('timer-warn');
+    }
+    if (state.secondsLeft <= 0) {
+      clearInterval(state.timerInterval);
+      alert('⏰ Time is up! Your exam will be auto-submitted.');
+      submitExam(true);
+      return;
+    }
+    state.secondsLeft--;
+  };
+  update();
+  state.timerInterval = setInterval(update, 1000);
+}
+
+// Action buttons
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (state.currentIndex > 0) navigateToQuestion(state.currentIndex - 1);
+});
+document.getElementById('saveNextBtn').addEventListener('click', () => {
+  if (state.currentIndex + 1 < state.currentTest.questions.length) {
+    navigateToQuestion(state.currentIndex + 1);
+  } else {
+    alert('This is the last question. Use "Submit Examination" to finish.');
+  }
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  const qNum = state.currentTest.questions[state.currentIndex].questionNumber;
+  delete state.responses[qNum];
+  renderQuestion();
+  renderPalette();
+});
+document.getElementById('markReviewBtn').addEventListener('click', () => {
+  const qNum = state.currentTest.questions[state.currentIndex].questionNumber;
+  state.markedForReview[qNum] = !state.markedForReview[qNum];
+  if (state.currentIndex + 1 < state.currentTest.questions.length) {
+    navigateToQuestion(state.currentIndex + 1);
+  } else {
+    renderQuestion();
+    renderPalette();
+  }
+});
+document.getElementById('submitExamBtn').addEventListener('click', () => {
+  const answered = Object.keys(state.responses).length;
+  const total = state.currentTest.questions.length;
+  const review = Object.values(state.markedForReview).filter(Boolean).length;
+  if (confirm(`You have answered ${answered} of ${total} questions.${review > 0 ? ` ${review} marked for review.` : ''}\n\nAre you sure you want to finally submit your examination?`)) {
+    submitExam(false);
+  }
+});
+
+// ---------- SCORING (matches src/lib/scoring.ts) ----------
+function evaluateExam(questions, responses, markingScheme) {
+  const positive = Number(markingScheme.positive ?? 4);
+  const negative = Number(markingScheme.negative ?? 1);
+  let score = 0, correctCount = 0, incorrectCount = 0, unattemptedCount = 0;
+  const totalPossible = questions.length * positive;
+
+  const details = questions.map(q => {
+    const selected = responses[q.questionNumber];
+    let status = 'unattempted';
+    let marksAwarded = 0;
+    if (!selected || String(selected).trim() === '') {
+      unattemptedCount++;
+    } else if (selected.toUpperCase() === q.correctAnswer.toUpperCase()) {
+      score += positive;
+      correctCount++;
+      marksAwarded = positive;
+      status = 'correct';
+    } else {
+      score -= negative;
+      incorrectCount++;
+      marksAwarded = -negative;
+      status = 'incorrect';
+    }
+    return { ...q, selected: selected || null, status, marksAwarded };
+  });
+
+  const percentage = totalPossible > 0 ? Number(((score / totalPossible) * 100).toFixed(2)) : 0;
+  return { score, totalPossible, percentage, correctCount, incorrectCount, unattemptedCount, details };
+}
+
+// ---------- SUBMIT ----------
+function submitExam(autoSubmit) {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  const timeTakenSeconds = state.initialDurationSeconds - state.secondsLeft;
+  const evaluation = evaluateExam(state.currentTest.questions, state.responses, state.currentTest.markingScheme);
+
+  // Save performance
+  const performance = {
+    id: uid(),
+    studentId: state.student.id,
+    studentName: state.student.name,
+    registrationId: state.student.registrationId,
+    testCode: state.currentTest.testCode,
+    examName: state.currentTest.examName,
+    score: evaluation.score,
+    totalPossible: evaluation.totalPossible,
+    percentage: evaluation.percentage,
+    correctCount: evaluation.correctCount,
+    incorrectCount: evaluation.incorrectCount,
+    unattemptedCount: evaluation.unattemptedCount,
+    timeTakenSeconds,
+    responses: state.responses,
+    details: evaluation.details,
+    completedAt: new Date().toISOString()
+  };
+
+  // Persist
+  const perfs = JSON.parse(localStorage.getItem('sfi_performances') || '[]');
+  perfs.push(performance);
+  localStorage.setItem('sfi_performances', JSON.stringify(perfs));
+
+  // Recalculate ranks for this testCode
+  const sameTest = perfs.filter(p => p.testCode === performance.testCode)
+    .sort((a, b) => b.score - a.score || a.timeTakenSeconds - b.timeTakenSeconds);
+  sameTest.forEach((p, idx) => { p.rank = idx + 1; });
+  localStorage.setItem('sfi_performances', JSON.stringify(perfs));
+
+  state.performanceId = performance.id;
+  performance.rank = sameTest.find(p => p.id === performance.id).rank;
+
+  renderResult(performance);
+}
+
+// ---------- RESULT ----------
+function renderResult(p) {
+  const timeMin = Math.floor(p.timeTakenSeconds / 60);
+  const timeSec = p.timeTakenSeconds % 60;
+
+  let rankColor = 'text-yellow-400';
+  let rankLabel = 'Excellent';
+  if (p.rank > 10) { rankColor = 'text-red-300'; rankLabel = 'Keep Practising'; }
+  else if (p.rank > 3) { rankColor = 'text-white'; rankLabel = 'Good'; }
+
+  document.getElementById('resultMain').innerHTML = `
+    <div class="fade-in space-y-6">
+      <!-- Header card -->
+      <div class="bg-gradient-to-br from-blood-600 to-blood-900 border-2 border-blood-400 rounded-xl p-6 shadow-2xl">
+        <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+          <div>
+            <p class="text-xs uppercase tracking-widest text-red-200 font-semibold">Performance Report</p>
+            <h1 class="text-2xl md:text-3xl font-black text-white mt-1">${esc(p.examName)}</h1>
+            <p class="text-sm text-red-200 mt-1">Test Code: <span class="font-mono text-white">${esc(p.testCode)}</span></p>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-red-200">Candidate</div>
+            <div class="text-lg font-bold">${esc(p.studentName)}</div>
+            <div class="text-xs font-mono text-red-200">${esc(p.registrationId)}</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+          <div class="bg-black/40 border border-blood-400 rounded-lg p-3 text-center">
+            <div class="text-xs text-red-200 uppercase">Score</div>
+            <div class="text-3xl font-black text-yellow-400 mt-1">${p.score}<span class="text-lg text-red-200">/${p.totalPossible}</span></div>
+          </div>
+          <div class="bg-black/40 border border-blood-400 rounded-lg p-3 text-center">
+            <div class="text-xs text-red-200 uppercase">Percentage</div>
+            <div class="text-3xl font-black text-white mt-1">${p.percentage}%</div>
+          </div>
+          <div class="bg-black/40 border border-blood-400 rounded-lg p-3 text-center">
+            <div class="text-xs text-red-200 uppercase">All India Rank</div>
+            <div class="text-3xl font-black ${rankColor} mt-1">#${p.rank}</div>
+          </div>
+          <div class="bg-black/40 border border-blood-400 rounded-lg p-3 text-center">
+            <div class="text-xs text-red-200 uppercase">Time Taken</div>
+            <div class="text-2xl font-black text-white mt-1">${timeMin}m ${timeSec}s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-green-900/40 border border-green-600 rounded-lg p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs uppercase text-green-300 font-bold">Correct</div>
+              <div class="text-4xl font-black text-green-400 mt-1">${p.correctCount}</div>
+            </div>
+            <div class="text-5xl">✓</div>
+          </div>
+          <div class="text-xs text-green-200 mt-2">+${p.correctCount * 4} marks</div>
+        </div>
+        <div class="bg-red-900/40 border border-red-600 rounded-lg p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs uppercase text-red-300 font-bold">Incorrect</div>
+              <div class="text-4xl font-black text-red-400 mt-1">${p.incorrectCount}</div>
+            </div>
+            <div class="text-5xl">✗</div>
+          </div>
+          <div class="text-xs text-red-200 mt-2">${p.incorrectCount} marks deducted</div>
+        </div>
+        <div class="bg-gray-800/60 border border-gray-600 rounded-lg p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs uppercase text-gray-300 font-bold">Unattempted</div>
+              <div class="text-4xl font-black text-gray-400 mt-1">${p.unattemptedCount}</div>
+            </div>
+            <div class="text-5xl">—</div>
+          </div>
+          <div class="text-xs text-gray-300 mt-2">No marks awarded</div>
+        </div>
+      </div>
+
+      <!-- Question-wise analysis -->
+      <div class="bg-gray-900/95 border border-blood-700 rounded-lg overflow-hidden">
+        <div class="bg-blood-600 px-6 py-3 border-b border-blood-400">
+          <h2 class="font-bold uppercase tracking-wide">Question-wise Analysis</h2>
+          <p class="text-xs text-red-200 mt-0.5">Correct answers are revealed after submission for learning purposes.</p>
+        </div>
+        <div class="p-4 space-y-3 max-h-[500px] overflow-y-auto">
+          ${p.details.map(d => {
+            const bg = d.status === 'correct' ? 'border-l-4 border-l-green-500 bg-green-900/20' :
+                       d.status === 'incorrect' ? 'border-l-4 border-l-red-500 bg-red-900/20' :
+                       'border-l-4 border-l-gray-500 bg-gray-800/40';
+            const icon = d.status === 'correct' ? '<span class="text-green-400 font-bold">✓</span>' :
+                         d.status === 'incorrect' ? '<span class="text-red-400 font-bold">✗</span>' :
+                         '<span class="text-gray-400 font-bold">—</span>';
+            return `
+              <div class="${bg} rounded p-3">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                  <div class="font-semibold text-sm">Q${d.questionNumber}. ${esc(d.text)}</div>
+                  <div class="text-xs font-mono whitespace-nowrap">${icon} ${d.marksAwarded > 0 ? '+' : ''}${d.marksAwarded}</div>
+                </div>
+                <div class="text-xs space-y-1 text-gray-300">
+                  <div><span class="text-red-200">Your answer:</span> <strong>${d.selected || '—'}</strong></div>
+                  <div><span class="text-green-300">Correct answer:</span> <strong class="text-yellow-400">${d.correctAnswer}</strong></div>
+                  <div class="grid grid-cols-2 gap-1 mt-2 pt-2 border-t border-gray-700">
+                    ${['A','B','C','D'].map(k => d['option'+k] ? `<div class="${k === d.correctAnswer ? 'text-yellow-400 font-bold' : ''}">${k}. ${esc(d['option'+k])}</div>` : '').join('')}
+                  </div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="bg-gray-900/95 border border-blood-700 rounded-lg overflow-hidden">
+        <div class="bg-blood-600 px-6 py-3 border-b border-blood-400">
+          <h2 class="font-bold uppercase tracking-wide">Leaderboard — ${esc(p.testCode)}</h2>
+        </div>
+        <div class="p-4">
+          ${(() => {
+            const perfs = JSON.parse(localStorage.getItem('sfi_performances') || '[]')
+              .filter(x => x.testCode === p.testCode)
+              .sort((a, b) => a.rank - b.rank)
+              .slice(0, 10);
+            if (perfs.length === 0) return '<p class="text-sm text-gray-400">No entries yet.</p>';
+            return `<table class="w-full text-sm">
+              <thead class="text-xs uppercase text-red-200 border-b border-blood-700">
+                <tr><th class="text-left py-2">Rank</th><th class="text-left py-2">Candidate</th><th class="text-left py-2">Score</th><th class="text-left py-2">%</th><th class="text-left py-2">Time</th></tr>
+              </thead>
+              <tbody class="divide-y divide-gray-800">
+                ${perfs.map(x => {
+                  const isMe = x.id === p.id;
+                  const tm = Math.floor(x.timeTakenSeconds / 60);
+                  return `<tr class="${isMe ? 'bg-blood-800/50' : ''}">
+                    <td class="py-2 font-bold ${x.rank <= 3 ? 'text-yellow-400' : ''}">#${x.rank}</td>
+                    <td class="py-2">${esc(x.studentName)}${isMe ? ' <span class="text-xs text-yellow-400">(You)</span>' : ''}</td>
+                    <td class="py-2 font-mono">${x.score}/${x.totalPossible}</td>
+                    <td class="py-2">${x.percentage}%</td>
+                    <td class="py-2 text-gray-400">${tm}m</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>`;
+          })()}
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <button onclick="newAttempt()" class="px-6 py-3 bg-blood-600 hover:bg-blood-400 text-white font-bold rounded shadow-lg uppercase tracking-wider text-sm focus-ring">Take Another Test</button>
+        <button onclick="location.reload()" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white font-bold rounded uppercase tracking-wider text-sm focus-ring">Return to Portal</button>
+      </div>
+    </div>`;
+  showPage('result');
+}
+
+function newAttempt() {
+  sessionStorage.removeItem('sfi_student');
+  state.student = null;
+  state.currentTest = null;
+  showPage('register');
+}
+
+// ---------- INIT ----------
+(function init() {
+  const raw = sessionStorage.getItem('sfi_student');
+  if (raw) {
+    try {
+      state.student = JSON.parse(raw);
+      if (state.student.testCode && DEMO_TESTS[state.student.testCode]) {
+        startExam(state.student.testCode);
+        return;
+      }
+    } catch(e) {}
+  }
+  showPage('register');
+})();
+</script>
+</body>
+</html>
