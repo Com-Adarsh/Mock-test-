@@ -1,10 +1,23 @@
 import crypto from 'node:crypto'
 
 const allowedActions = new Set([
-  'health', 'login', 'register', 'logout', 'listTests', 'getTest', 'startAttempt',
-  'saveResponse', 'submitAttempt', 'listStudents', 'listResults', 'saveTest',
-  'publishTest', 'unpublishTest', 'getDashboard'
+  'health', 'login', 'register', 'logout', 'listTests', 'getTest', 'getQuestions', 'startAttempt',
+  'saveResponse', 'submitAttempt', 'myResults', 'listStudents', 'listResults', 'saveTest',
+  'publishTest', 'unpublishTest', 'getDashboard', 'modLogin', 'modSaveTest', 'modGetTests',
+  'modDeleteTest', 'modPublishTest', 'modGetResults', 'modGetStudents'
 ])
+
+const actionAliases = {
+  health: 'health',
+  login: 'modLogin',
+  getTest: 'getQuestions',
+  listStudents: 'modGetStudents',
+  listResults: 'modGetResults',
+  saveTest: 'modSaveTest',
+  publishTest: 'modPublishTest',
+  unpublishTest: 'modPublishTest',
+  getDashboard: 'health'
+}
 
 function json(status, body) {
   return { status, headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(body) }
@@ -25,13 +38,18 @@ export default async function handler(request, response) {
     return response.status(400).json({ success: false, error: 'Unsupported backend action.' })
   }
 
+  const upstreamAction = actionAliases[payload.action] || payload.action
+  const upstreamPayload = { ...payload, action: upstreamAction }
+  if (payload.sessionToken && !payload.token) upstreamPayload.token = payload.sessionToken
+  if (payload.action === 'unpublishTest') upstreamPayload.publish = false
+  if (payload.action === 'publishTest') upstreamPayload.publish = true
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15000)
   try {
     const upstream = await fetch(gasUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Request-Id': crypto.randomUUID() },
-      body: JSON.stringify({ ...payload, gatewaySecret: process.env.BACKEND_SECRET }),
+      body: JSON.stringify({ ...upstreamPayload, gatewaySecret: process.env.BACKEND_SECRET }),
       signal: controller.signal,
       redirect: 'follow'
     })
