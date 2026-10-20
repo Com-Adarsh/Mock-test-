@@ -1,102 +1,157 @@
-import React, {useEffect, useState} from 'react'
-import {createRoot} from 'react-dom/client'
-import {BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation} from 'react-router-dom'
-import {LayoutDashboard, FileText, UploadCloud, Users, BarChart3, Settings, LogOut, Plus, Search, MoreHorizontal, ArrowUpRight, Clock3, CheckCircle2, AlertCircle, BookOpen, ShieldCheck, ChevronRight} from 'lucide-react'
-import './styles.css'
+import crypto from 'node:crypto'
 
-const tests=[]
-const navItems=[['/moderator/dashboard','Overview',LayoutDashboard],['/moderator/tests','Test library',FileText],['/moderator/upload','Question upload',UploadCloud],['/moderator/students','Students',Users],['/moderator/results','Results',BarChart3],['/moderator/settings','Settings',Settings]]
+const PASSWORD_HASH_ITERATIONS = 600000
+const allowedActions = new Set([
+  'health', 'register', 'studentLogin', 'requestStudentActivation', 'activateStudent',
+  'sessionInfo', 'modLogin', 'logout', 'listTests', 'getTest', 'getQuestions', 'startAttempt',
+  'saveResponse', 'submitAttempt', 'myResults', 'listStudents', 'listResults', 'saveTest',
+  'publishTest', 'unpublishTest', 'getDashboard', 'modSaveTest', 'modGetTests',
+  'modDeleteTest', 'modPublishTest', 'modGetResults', 'modGetStudents'
+])
 
-function App(){return <Routes><Route path="/" element={<Landing/>}/><Route path="/student/login" element={<StudentLogin/>}/><Route path="/moderator/login" element={<ModeratorLogin/>}/><Route path="/moderator/*" element={<ModeratorShell/>}/><Route path="/student/*" element={<StudentShell/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes>}
-function Landing(){return <main className="landing"><div className="landing-grid"/><div className="brand-mark">SFI <span>×</span> CUSAT</div><div className="landing-copy"><p className="eyebrow">Entrance preparation, reimagined</p><h1>Practice with purpose.<br/><em>Perform with confidence.</em></h1><p className="lede">A focused mock test platform for CUSAT aspirants, built for serious preparation and measurable progress.</p></div><div className="portal-cards"><Link className="portal-card student-card" to="/student/login"><div className="portal-icon"><BookOpen/></div><div><span className="card-kicker">For candidates</span><h2>Student portal</h2><p>Take timed mock tests and track your progress.</p></div><ArrowUpRight/></Link><Link className="portal-card moderator-card" to="/moderator/login"><div className="portal-icon"><ShieldCheck/></div><div><span className="card-kicker">For coordinators</span><h2>Moderator portal</h2><p>Create tests, manage questions, and review results.</p></div><ArrowUpRight/></Link></div><p className="landing-foot">SFI CUSAT MOCK TEST <span>•</span> Academic year 2026</p></main>}
-function Login({moderator=false}){const nav=useNavigate(); const [email,setEmail]=useState(''); const [pass,setPass]=useState(''); const [error,setError]=useState(''); const [busy,setBusy]=useState(false); const submit=async e=>{e.preventDefault();if(!email||!pass){setError('Enter your email and password to continue.');return}setBusy(true);setError('');try{const response=await fetch('/api/gas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',role:moderator?'moderator':'student',email:email.trim(),password:pass})});const result=await response.json();if(!response.ok||result.success===false)throw new Error(result.error||result.message||'Sign in failed.');const token=result.sessionToken||result.token;if(!token)throw new Error('The backend did not issue a valid session.');sessionStorage.setItem('sfi_session',token);sessionStorage.setItem('sfi_user',JSON.stringify(result.user||{email:email.trim()}));nav(moderator?'/moderator/dashboard':'/student/dashboard')}catch(loginError){setError(loginError.message||'Unable to sign in.')}finally{setBusy(false)}};return <main className="auth-page"><Link to="/" className="back-link">← Back to portal</Link><div className="auth-layout"><div className="auth-aside"><div className="brand-mark">SFI <span>×</span> CUSAT</div><p className="eyebrow">{moderator?'Operations workspace':'Your preparation space'}</p><h1>{moderator?'Run better examinations.':'Your next score starts here.'}</h1><p>{moderator?'A secure workspace for building rigorous mock tests and understanding candidate performance.':'Build consistency through focused practice, honest feedback, and a clear view of your progress.'}</p><div className="quote">“Small improvements, repeated daily, become remarkable results.”</div></div><form className="auth-card" onSubmit={submit}><div className="auth-card-top"><span className="mini-icon">{moderator?<ShieldCheck/>:<BookOpen/>}</span><span className="status-dot">Secure sign in</span></div><h2>{moderator?'Moderator sign in':'Student sign in'}</h2><p className="muted">{moderator?'Access the test management workspace.':'Continue your mock test journey.'}</p>{error&&<div className="error-box"><AlertCircle/> {error}</div>}<label>Email address<input type="email" placeholder={moderator?'moderator@sfi-cusat.org':'you@example.com'} value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Password<input type="password" placeholder="Enter your password" value={pass} onChange={e=>setPass(e.target.value)}/></label><div className="form-row"><label className="check"><input type="checkbox"/> Remember me</label><a href="#reset">Forgot password?</a></div><button className="primary-btn" type="submit" disabled={busy}>{busy?'Signing in…':'Sign in'} {!busy&&<ChevronRight/>}</button><p className="switch-login">{moderator?'Are you a student? ':'Need moderator access? '}<Link to={moderator?'/student/login':'/moderator/login'}>{moderator?'Student sign in':'Moderator sign in'}</Link></p></form></div></main>}
-function ModeratorLogin(){return <Login moderator/>} function StudentLogin(){return <Login/>}
-function ModeratorShell(){return <div className="app-shell"><aside className="sidebar"><Link to="/moderator/dashboard" className="side-brand"><span>S</span><div>SFI CUSAT<small>MOCK TEST</small></div></Link><div className="workspace"><span className="avatar">AR</span><div><b>Academic operations</b><small>Moderator workspace</small></div></div><nav>{navItems.map(([to,label,Icon])=><Link key={to} to={to} className={({isActive})=>isActive?'active':''}><Icon/><span>{label}</span>{label==='Test library'&&<span className="nav-count">3</span>}</Link>)}</nav><div className="sidebar-bottom"><div className="support"><span className="pulse"/><div><b>All systems operational</b><small>Workspace status</small></div></div><button className="logout" onClick={()=>location.href='/moderator/login'}><LogOut/> Sign out</button></div></aside><section className="main-shell"><header className="top-header"><div><span className="mobile-brand">SFI CUSAT</span><p className="breadcrumb">Moderator workspace <span>/</span> <b><PageName/></b></p></div><div className="top-actions"><button className="icon-btn"><Search/></button><button className="icon-btn"><Settings/></button><span className="top-avatar">AR</span></div></header><main className="content"><Routes><Route path="dashboard" element={<Dashboard/>}/><Route path="tests" element={<Tests/>}/><Route path="tests/create" element={<CreateTest/>}/><Route path="tests/:testId/edit" element={<CreateTest/>}/><Route path="upload" element={<Upload/>}/><Route path="students" element={<Students/>}/><Route path="results" element={<Results/>}/><Route path="settings" element={<SettingsPage/>}/><Route path="*" element={<Navigate to="/moderator/dashboard" replace/>}/></Routes></main></section></div>}
-function PageName(){const l=useLocation();return navItems.find(([to])=>l.pathname.startsWith(to))?.[1]||'Overview'}
-function Stat({label,value,detail,icon,positive}){return <div className="stat"><div className="stat-head"><span>{label}</span><span className="stat-icon">{icon}</span></div><strong>{value}</strong><small className={positive?'positive':''}>{detail}</small></div>}
-function Dashboard(){return <><div className="page-title"><div><p className="eyebrow">Monday, October 19, 2026</p><h1>Good morning, Arjun.</h1><p className="muted">Here&apos;s what&apos;s happening across your examination workspace.</p></div><Link className="primary-btn" to="/moderator/tests/create"><Plus/> Create new test</Link></div><div className="stats"><Stat label="Total students" value="2,486" detail="↑ 12.4% from last month" positive icon={<Users/>}/><Stat label="Published tests" value="12" detail="3 updated this week" icon={<FileText/>}/><Stat label="Total attempts" value="8,942" detail="↑ 8.7% from last month" positive icon={<BarChart3/>}/><Stat label="Average score" value="68.4%" detail="Across all published tests" icon={<CheckCircle2/>}/></div><div className="dashboard-grid"><section className="panel recent-panel"><div className="panel-heading"><div><h2>Recent tests</h2><p>Manage your active examination papers.</p></div><Link to="/moderator/tests">View all <ArrowUpRight/></Link></div><div className="table-wrap"><table><thead><tr><th>Test name</th><th>Status</th><th>Questions</th><th>Attempts</th><th>Last updated</th><th/></tr></thead><tbody>{tests.map(t=><tr key={t.id}><td><div className="test-name"><span className="test-symbol"><FileText/></span><div><b>{t.title}</b><small>{t.subject}</small></div></div></td><td><span className={'badge '+(t.status==='Published'?'published':'draft')}>{t.status}</span></td><td>{t.questions}</td><td>{t.attempts||'—'}</td><td className="muted">{t.updated}</td><td><button className="more"><MoreHorizontal/></button></td></tr>)}</tbody></table></div></section><section className="panel activity-panel"><div className="panel-heading"><div><h2>Recent activity</h2><p>Latest updates from your workspace.</p></div><button className="more"><MoreHorizontal/></button></div><div className="activity-list"><Activity icon={<UploadCloud/>} title="Question bank imported" desc="CUSAT Physics · 50 questions" time="9:42 AM" color="blue"/><Activity icon={<CheckCircle2/>} title="Test published" desc="Engineering Entrance Mock 04" time="Yesterday" color="green"/><Activity icon={<Users/>} title="New students registered" desc="24 new registrations" time="Oct 17" color="purple"/><Activity icon={<Clock3/>} title="Results scheduled" desc="CUSAT CAT Physics 2026" time="Oct 16" color="orange"/></div></section></div></>}
-function Activity({icon,title,desc,time,color}){return <div className="activity"><span className={'activity-icon '+color}>{icon}</span><div><b>{title}</b><small>{desc}</small></div><time>{time}</time></div>}
-function Tests(){return <><div className="page-title"><div><p className="eyebrow">Content management</p><h1>Test library</h1><p className="muted">Create, configure, and publish your mock tests.</p></div><Link className="primary-btn" to="/moderator/tests/create"><Plus/> Create new test</Link></div><div className="toolbar"><div className="search-field"><Search/><input placeholder="Search tests..."/></div><button className="filter-btn">All tests <ChevronRight/></button></div><section className="panel"><div className="table-wrap"><table><thead><tr><th>Test name</th><th>Subject</th><th>Status</th><th>Duration</th><th>Questions</th><th>Attempts</th><th/></tr></thead><tbody>{tests.map(t=><tr key={t.id}><td><div className="test-name"><span className="test-symbol"><FileText/></span><div><b>{t.title}</b><small>Updated {t.updated}</small></div></div></td><td>{t.subject}</td><td><span className={'badge '+(t.status==='Published'?'published':'draft')}>{t.status}</span></td><td>{t.duration}</td><td>{t.questions}</td><td>{t.attempts||'—'}</td><td><button className="more"><MoreHorizontal/></button></td></tr>)}</tbody></table></div></section></>}
-function Upload(){return <><div className="page-title"><div><p className="eyebrow">Build your question bank</p><h1>Upload questions</h1><p className="muted">Import a spreadsheet, then validate and publish with confidence.</p></div></div><section className="upload-grid"><div className="panel drop-panel"><div className="upload-icon"><UploadCloud/></div><h2>Drop your question file here</h2><p>CSV, XLSX, JSON, PDF, or DOCX up to 20 MB</p><button className="primary-btn">Choose file</button><small>Questions are validated before they enter your library.</small></div><div className="panel"><div className="panel-heading"><div><h2>Import checklist</h2><p>Recommended before you upload.</p></div></div><div className="checklist"><div><CheckCircle2/> Use the question template</div><div><CheckCircle2/> Include answer keys and marks</div><div><CheckCircle2/> Review the import report</div><div><CheckCircle2/> Save as draft before publishing</div></div><Link className="text-link" to="/moderator/tests">View question template <ArrowUpRight/></Link></div></section></>}
-function Students(){return <><div className="page-title"><div><p className="eyebrow">Candidate directory</p><h1>Students</h1><p className="muted">2,486 registered candidates across all tests.</p></div><button className="secondary-btn">Export list <ArrowUpRight/></button></div><section className="panel"><div className="toolbar compact"><div className="search-field"><Search/><input placeholder="Search by name or roll number..."/></div></div><div className="empty-row"><Users/><h3>Student directory ready</h3><p>Connect your Google Sheets data source to load live candidate records.</p></div></section></>}
-function Results(){return <><div className="page-title"><div><p className="eyebrow">Performance overview</p><h1>Results</h1><p className="muted">Review performance across published examinations.</p></div><button className="secondary-btn">Export results <ArrowUpRight/></button></div><div className="stats"><Stat label="Submissions" value="8,942" detail="Across 12 published tests" icon={<BarChart3/>}/><Stat label="Completion rate" value="91.8%" detail="↑ 3.2% from last month" positive icon={<CheckCircle2/>}/><Stat label="Top score" value="98.6%" detail="CUSAT CAT Physics 2026" icon={<ArrowUpRight/>}/></div><section className="panel chart-panel"><div className="panel-heading"><div><h2>Score distribution</h2><p>Average performance over the last 30 days.</p></div><span className="chart-legend"><i/> Average score</span></div><div className="fake-chart"><div className="chart-grid"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div><svg viewBox="0 0 800 220" preserveAspectRatio="none" role="img" aria-label="Score trend chart"><path d="M0 170 C80 160 90 120 160 135 S230 155 290 112 S360 120 420 98 S500 130 550 84 S620 110 680 55 S750 50 800 35" fill="none" stroke="currentColor" strokeWidth="4"/><path d="M0 170 C80 160 90 120 160 135 S230 155 290 112 S360 120 420 98 S500 130 550 84 S620 110 680 55 S750 50 800 35 V220 H0Z" fill="currentColor" opacity=".08"/></svg></div></section></>}
-function CreateTest(){
-  const [step,setStep]=useState(1)
-  const [title,setTitle]=useState('')
-  const [description,setDescription]=useState('')
-  const [duration,setDuration]=useState('60')
-  const [file,setFile]=useState(null)
-  const [sections,setSections]=useState(['General Aptitude'])
-  const [questions,setQuestions]=useState([])
-  const [saved,setSaved]=useState(false)
-  const [status,setStatus]=useState('draft')
-  const [busy,setBusy]=useState(false)
-  const [message,setMessage]=useState(null)
-  const addQuestion=()=>setQuestions(q=>[...q,{id:Date.now(),type:'MCQ',answer:'',marks:'1',section:sections[0]}])
-  const addSection=()=>setSections(s=>[...s,`Section ${s.length+1}`])
-  const updateQuestion=(id,key,value)=>setQuestions(q=>q.map(item=>item.id===id?{...item,[key]:value}:item))
-  const validate=()=>{
-    if(!title.trim()) return 'Test title is required.'
-    if(!Number.isInteger(Number(duration))||Number(duration)<1) return 'Duration must be at least 1 minute.'
-    if(!questions.length) return 'Add at least one question before publishing.'
-    for(const [index,q] of questions.entries()){
-      if(!q.section||!sections.includes(q.section)) return `Question ${index+1} has no valid section.`
-      if(!q.answer) return `Question ${index+1} has no correct answer.`
-      if(!Number.isFinite(Number(q.marks))||Number(q.marks)<=0) return `Question ${index+1} must have valid marks.`
-      if(!file) return 'Upload the question PDF before publishing.'
-    }
-    return ''
-  }
-  const saveDraft=()=>{setSaved(true);setMessage({type:'success',text:'Draft saved. You can continue editing or publish it when validation passes.'})}
-  const publish=async()=>{
-    setMessage(null)
-    const validationError=validate()
-    if(validationError){setMessage({type:'error',text:validationError});return}
-    const endpoint='/api/gas'
-    if(!endpoint){setMessage({type:'error',text:'Google Apps Script URL is not configured. Nothing was published.'});return}
-    setBusy(true)
-    const testId=`test-${Date.now()}`
-    const payload={id:testId,title:title.trim(),description:description.trim(),duration:Number(duration),posMarks:4,negMarks:1,status:'Published',questions:questions.map(q=>({...q,page:q.page||q.section,negMarks:q.negMarks||1}))}
-    try{
-      const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'modSaveTest',sessionToken:sessionStorage.getItem('sfi_session')||'',test:payload})})
-      if(!response.ok) throw new Error(`Backend returned ${response.status}`)
-      const result=await response.json()
-      if(!result.success) throw new Error(result.message||'The backend did not confirm publication.')
-      setStatus('published');setSaved(true);setMessage({type:'success',text:`Test published successfully. Test ID: ${testId}`})
-    }catch(error){setMessage({type:'error',text:`Publication failed: ${error.message}`})}
-    finally{setBusy(false)}
-  }
-  const unpublish=async()=>{setMessage(null);const endpoint='/api/gas';if(!endpoint){setMessage({type:'error',text:'Google Apps Script URL is not configured. Nothing was unpublished.'});return}setBusy(true);try{const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'modPublishTest',sessionToken:sessionStorage.getItem('sfi_session')||'',testId:title.trim(),publish:false})});if(!response.ok) throw new Error(`Backend returned ${response.status}`);const result=await response.json();if(!result.success) throw new Error(result.message||'The backend did not confirm unpublishing.');setStatus('unpublished');setMessage({type:'success',text:'Test unpublished. Existing questions and results were preserved.'})}catch(error){setMessage({type:'error',text:`Unpublish failed: ${error.message}`})}finally{setBusy(false)}}
-  const stepNames=['Details','PDF Upload','Crop Questions','Answer Keys','Publish']
-  return <><div className="page-title"><div><p className="eyebrow">Moderator / Test management</p><h1>Create new test</h1><p className="muted">Build a test in one connected workflow. Drafts stay private until you publish.</p></div><span className={'badge '+(status==='published'?'published':'draft')}>{status==='published'?'Published':status==='unpublished'?'Unpublished':saved?'Saved':'Draft'}</span></div><div className="creator-steps">{stepNames.map((name,index)=><button type="button" className={step===index+1?'active':''} onClick={()=>setStep(index+1)} key={name}><b>{index+1}</b>{name}</button>)}</div><section className="panel creator-panel">{message&&<div className={message.type==='error'?'error-box':'success-box'} role="status">{message.type==='error'?<AlertCircle/>:<CheckCircle2/>}{message.text}</div>}{step===1&&<div className="creator-form"><h2>Test details</h2><label>Test title<input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. CUSAT CAT Mock 01"/></label><label>Description<textarea value={description} onChange={e=>setDescription(e.target.value)} placeholder="Add instructions for students..."/></label><div className="form-grid"><label>Duration (minutes)<input type="number" min="1" value={duration} onChange={e=>setDuration(e.target.value)}/></label><label>Maximum attempts<input type="number" min="1" defaultValue="1"/></label></div><label>Result visibility<select defaultValue="after"><option value="after">After submission</option><option value="manual">When released</option></select></label></div>}{step===2&&<div className="creator-form"><h2>Upload question paper</h2><p className="muted">Choose a PDF up to 20 MB.</p><label className="file-drop"><UploadCloud/><span>{file?file.name:'Select a PDF file'}</span><input type="file" accept="application/pdf" onChange={e=>setFile(e.target.files?.[0]||null)}/></label></div>}{step===3&&<div className="creator-form"><h2>Crop questions</h2><p className="muted">Add each question after reviewing its PDF crop.</p><button type="button" className="secondary-btn" onClick={addQuestion}><Plus/> Add question</button>{questions.map((q,index)=><div className="question-row" key={q.id}><b>Question {index+1}</b><select value={q.section} onChange={e=>updateQuestion(q.id,'section',e.target.value)}>{sections.map(section=><option key={section}>{section}</option>)}</select><input placeholder="Marks" type="number" min="1" value={q.marks} onChange={e=>updateQuestion(q.id,'marks',e.target.value)}/></div>)}</div>}{step===4&&<div className="creator-form"><h2>Answer keys</h2><p className="muted">Set one correct answer and valid marks for every question.</p>{questions.map((q,index)=><label key={q.id}>Question {index+1} correct answer<select value={q.answer} onChange={e=>updateQuestion(q.id,'answer',e.target.value)}><option value="">Select answer</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></label>)}</div>}{step===5&&<div className="creator-form"><h2>Publish test</h2><p className="muted">Publishing makes this test available to students only after backend confirmation.</p><div className="publish-actions"><button type="button" className="secondary-btn" onClick={saveDraft} disabled={busy}>Save draft</button>{status==='published'?<button type="button" className="secondary-btn" onClick={unpublish} disabled={busy}>{busy?'Updating...':'Unpublish test'}</button>:<button type="button" className="primary-btn" onClick={publish} disabled={busy}>{busy?'Publishing...':'Publish test'} <CheckCircle2/></button>}</div></div>}<div className="creator-footer"><button type="button" className="secondary-btn" onClick={()=>setStep(s=>Math.max(1,s-1))} disabled={step===1}>Back</button><button type="button" className="primary-btn" onClick={()=>setStep(s=>Math.min(5,s+1))} disabled={step===5}>Continue <ChevronRight/></button></div></section></>
+const actionAliases = {
+  health: 'health',
+  getTest: 'getQuestions',
+  listStudents: 'modGetStudents',
+  listResults: 'modGetResults',
+  saveTest: 'modSaveTest',
+  publishTest: 'modPublishTest',
+  unpublishTest: 'modPublishTest',
+  getDashboard: 'health'
 }
-function SettingsPage(){return <><div className="page-title"><div><p className="eyebrow">Workspace preferences</p><h1>Settings</h1><p className="muted">Manage your workspace and connected services.</p></div></div><section className="panel settings-panel"><h2>Workspace profile</h2><label>Workspace name<input value="SFI CUSAT Mock Test" readOnly/></label><label>Connected data source<div className="connection"><span className="pulse"/><div><b>Google Sheets + Apps Script</b><small>Connected and ready for sync</small></div><span className="badge published">Active</span></div></label></section></>}
-function StudentShell(){
-  const endpoint='/api/gas'
-  const [availableTests,setAvailableTests]=useState([])
-  const [loading,setLoading]=useState(true)
-  const [error,setError]=useState('')
-  const [selectedTest,setSelectedTest]=useState(null)
-  const loadTests=async()=>{
-    if(!endpoint){setLoading(false);setError('Student test service is not configured.');return}
-    setLoading(true);setError('')
-    try{
-      const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8',Accept:'application/json'},body:JSON.stringify({action:'listTests'})})
-      if(!response.ok) throw new Error(`Test service returned ${response.status}.`)
-      const result=await response.json()
-      if(result.success===false) throw new Error(result.error||'The test service could not load available tests.')
-      const rows=Array.isArray(result.tests)?result.tests:Array.isArray(result.data)?result.data:[]
-      const normalized=rows.filter(test=>['published','Published'].includes(String(test.status||'').trim())).map(test=>({
-        id:test.id||test.testId,
-        title:test.title||test.name||'Untitled test',
-        duration:test.durationMinutes||test.duration||0,
-        questions:test.questionCount||test.questions?.length||test.questions||0,
-        sections:Array.isArray(test.sections)?test.sections:[],
-        status:'published'
-      })).filter(test=>test.id)
-      setAvailableTests(normalized)
-    }catch(loadError){setAvailableTests([]);setError(loadError.message||'Unable to load available tests.')}finally{setLoading(false)}
+
+function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase()
+}
+
+function passwordError(password, confirmation) {
+  if (typeof password !== 'string' || password.length < 12 || password.length > 256) {
+    return 'Use a password between 12 and 256 characters.'
   }
-  useEffect(()=>{loadTests()},[])
-  return <div className="student-shell"><header className="student-header"><Link to="/" className="side-brand"><span>S</span><div>SFI CUSAT<small>MOCK TEST</small></div></Link><div className="student-user">Arjun R <button className="logout">Sign out</button></div></header><main className="student-content"><div className="page-title"><div><p className="eyebrow">Student dashboard</p><h1>Ready for your next attempt?</h1><p className="muted">Choose a published mock test and keep your preparation moving.</p></div><button className="secondary-btn" type="button" onClick={loadTests}>Refresh tests</button></div>{loading&&<div className="panel empty-row"><p>Loading available tests...</p></div>}{error&&<div className="panel error-box" role="alert"><AlertCircle/><div><b>Could not load available tests</b><p>{error}</p><button className="secondary-btn" type="button" onClick={loadTests}>Retry</button></div></div>}{!loading&&!error&&!availableTests.length&&<div className="panel empty-row"><BookOpen/><h3>No published tests available</h3><p>Published tests will appear here when they are available for your account.</p></div>}<div className="student-cards">{availableTests.map(t=><div className="test-card" key={t.id}><span className="badge published">Available</span><h2>{t.title}</h2><p>{t.duration} minutes · {t.questions} questions</p>{t.sections.length>0&&<small>Sections: {t.sections.join(', ')}</small>}<button className="primary-btn" type="button" onClick={()=>setSelectedTest(t)}>Start test <ChevronRight/></button></div>)}</div>{selectedTest&&<div className="panel instructions-panel"><div><span className="eyebrow">Test instructions</span><h2>{selectedTest.title}</h2><p className="muted">Your authorized attempt will open after eligibility is verified.</p></div><button className="secondary-btn" type="button" onClick={()=>setSelectedTest(null)}>Close</button></div>}</main></div>}
-createRoot(document.getElementById('root')).render(<BrowserRouter><App/></BrowserRouter>)
+  if (password !== confirmation) return 'Passwords do not match.'
+  return ''
+}
+
+function isPasswordInput(password) {
+  return typeof password === 'string' && password.length >= 12 && password.length <= 256
+}
+
+function createPasswordHash(password) {
+  const salt = crypto.randomBytes(16)
+  const derived = crypto.pbkdf2Sync(password, salt, PASSWORD_HASH_ITERATIONS, 32, 'sha256')
+  return 'pbkdf2-sha256$' + PASSWORD_HASH_ITERATIONS + '$' + salt.toString('hex') + '$' + derived.toString('hex')
+}
+
+function verifyPassword(password, encodedHash) {
+  const parts = String(encodedHash || '').split('$')
+  if (parts.length !== 4 || parts[0] !== 'pbkdf2-sha256' ||
+      parts[1] !== String(PASSWORD_HASH_ITERATIONS) ||
+      !/^[0-9a-f]{32}$/i.test(parts[2]) || !/^[0-9a-f]{64}$/i.test(parts[3])) return false
+  const actual = crypto.pbkdf2Sync(password, Buffer.from(parts[2], 'hex'), PASSWORD_HASH_ITERATIONS, 32, 'sha256')
+  const expected = Buffer.from(parts[3], 'hex')
+  return crypto.timingSafeEqual(actual, expected)
+}
+
+async function callAppsScript(gasUrl, secret, payload) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15000)
+  try {
+    const upstream = await fetch(gasUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Request-Id': crypto.randomUUID() },
+      body: JSON.stringify({ ...payload, gatewaySecret: secret }),
+      signal: controller.signal,
+      redirect: 'follow'
+    })
+    const text = await upstream.text()
+    let data
+    try { data = JSON.parse(text) } catch { throw new Error('The Apps Script service returned malformed JSON.') }
+    if (!upstream.ok) throw new Error('The Apps Script service rejected the request.')
+    return data
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+function invalidCredentials(response, message) {
+  return response.status(200).json({ success: false, message: message })
+}
+
+export default async function handler(request, response) {
+  if (request.method !== 'POST') return response.status(405).json({ success: false, error: 'POST is required.' })
+  const gasUrl = process.env.GAS_URL
+  if (!gasUrl) return response.status(503).json({ success: false, error: 'The Google Apps Script service is not configured. Set GAS_URL in Vercel project settings.' })
+  const backendSecret = process.env.BACKEND_SECRET
+  if (!backendSecret) return response.status(503).json({ success: false, error: 'The private backend gateway is not configured. Set BACKEND_SECRET in Vercel project settings.' })
+
+  let payload
+  try {
+    payload = typeof request.body === 'string' ? JSON.parse(request.body) : request.body
+  } catch {
+    return response.status(400).json({ success: false, error: 'Request body must be valid JSON.' })
+  }
+  if (!payload || typeof payload.action !== 'string' || !allowedActions.has(payload.action)) {
+    return response.status(400).json({ success: false, error: 'Unsupported backend action.' })
+  }
+
+  try {
+    if (payload.action === 'register' || payload.action === 'activateStudent') {
+      const message = passwordError(payload.password, payload.confirmPassword)
+      if (message) return response.status(400).json({ success: false, message: message })
+      const passwordHash = createPasswordHash(payload.password)
+      const upstreamPayload = { ...payload, passwordHash: passwordHash }
+      delete upstreamPayload.password
+      delete upstreamPayload.confirmPassword
+      return response.status(200).json(await callAppsScript(gasUrl, backendSecret, upstreamPayload))
+    }
+
+    if (payload.action === 'studentLogin') {
+      if (!isPasswordInput(payload.password)) {
+        return invalidCredentials(response, 'Invalid roll number or password.')
+      }
+      const credentialResponse = await callAppsScript(gasUrl, backendSecret, {
+        action: 'getStudentCredential',
+        rollNumber: payload.rollNumber
+      })
+      const credential = credentialResponse && credentialResponse.credential
+      if (!credential || !verifyPassword(String(payload.password || ''), credential.passwordHash)) {
+        return invalidCredentials(response, 'Invalid roll number or password. Existing accounts without a password can be activated using the registered email.')
+      }
+      return response.status(200).json(await callAppsScript(gasUrl, backendSecret, {
+        action: 'createStudentSession',
+        rollNumber: credential.rollNumber
+      }))
+    }
+
+    if (payload.action === 'modLogin') {
+      if (!isPasswordInput(payload.password)) {
+        return invalidCredentials(response, 'Invalid moderator credentials.')
+      }
+      const credentialResponse = await callAppsScript(gasUrl, backendSecret, { action: 'getModeratorCredential' })
+      const credential = credentialResponse && credentialResponse.credential
+      if (!credential || normalizeEmail(payload.email) !== normalizeEmail(credential.email) ||
+          !verifyPassword(payload.password, credential.passwordHash)) {
+        return invalidCredentials(response, 'Invalid moderator credentials.')
+      }
+      return response.status(200).json(await callAppsScript(gasUrl, backendSecret, {
+        action: 'createModeratorSession'
+      }))
+    }
+
+    const upstreamPayload = { ...payload, action: actionAliases[payload.action] || payload.action }
+    delete upstreamPayload.gatewaySecret
+    if (payload.sessionToken && !payload.token) upstreamPayload.token = payload.sessionToken
+    delete upstreamPayload.sessionToken
+    if (payload.action === 'unpublishTest') upstreamPayload.publish = false
+    if (payload.action === 'publishTest') upstreamPayload.publish = true
+    return response.status(200).json(await callAppsScript(gasUrl, backendSecret, upstreamPayload))
+  } catch (error) {
+    const message = error?.name === 'AbortError'
+      ? 'The Apps Script service timed out.'
+      : error?.message === 'The Apps Script service returned malformed JSON.'
+        ? error.message
+        : 'The Apps Script service is unavailable.'
+    const status = error?.name === 'AbortError' ? 504 : 502
+    return response.status(status).json({ success: false, error: message })
+  }
+}
